@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vayro Street · Painel</title>
+<meta name="theme-color" content="#0f1012">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="css">
+:root{
+  --bg:#0f1012; --card:#18191c; --card2:#202226; --line:#2c2e33;
+  --txt:#f2f2ee; --mut:#a2a39e; --lime:#c8f53a; --lime-d:#a6d11c;
+  --red:#ff6b5b; --blue:#6cc4ff; --amber:#ffc24a; --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.45}
+body{padding-bottom:84px}
+h1,h2,h3,.disp{font-family:Archivo,Inter,sans-serif;letter-spacing:-.01em}
+a{color:var(--lime)}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 6px;max-width:760px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:11px;background:var(--lime);color:#111;display:grid;place-items:center;font:900 18px Archivo}
+.brand img{height:34px;width:auto;display:block}
+.hero-logo{display:block;max-width:260px;width:70%;height:auto;margin:10px 0 12px}
+.logos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.logos button{background:var(--card2);border:2px solid var(--line);border-radius:12px;padding:14px 10px 10px;cursor:pointer;color:var(--mut);font:600 12px Inter;display:flex;flex-direction:column;align-items:center;gap:8px}
+.logos button img{width:100%;max-width:150px;height:56px;object-fit:contain}
+.logos button.on{border-color:var(--lime);color:var(--lime)}
+.brand b{font:800 17px Archivo;display:block}
+.brand small{color:var(--mut);font-size:12px}
+.chip{font-size:12px;padding:5px 10px;border-radius:99px;background:var(--card2);color:var(--mut);white-space:nowrap}
+.chip.ok{color:var(--lime)} .chip.warn{color:var(--amber)}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(15,16,18,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .in{display:flex;max-width:760px;width:100%}
+nav.tabs button{flex:1;min-width:0;background:none;border:0;color:var(--mut);padding:9px 0 10px;font:600 10px Inter;letter-spacing:-.01em;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav.tabs button .ic{font-size:18px;line-height:1}
+nav.tabs button.on{color:var(--lime)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.card h2{font-size:18px;margin-bottom:4px}
+.card h3{font-size:15px;margin-bottom:8px}
+.sub{color:var(--mut);font-size:13px}
+.hero{background:linear-gradient(135deg,#1d2410 0%,#18191c 60%);border-color:#33401a}
+.hero h1{font-size:25px;line-height:1.15;margin:4px 0 8px}
+.hero .tag{color:var(--lime);font:700 12px Inter;text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:520px){.g3{grid-template-columns:1fr 1fr}.g3 .stat:last-child{grid-column:span 2}}
+.stat{background:var(--card2);border-radius:12px;padding:12px}
+.stat .l{font-size:12px;color:var(--mut)}
+.stat .v{font:800 19px Archivo;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pos{color:var(--lime)} .neg{color:var(--red)}
+.bar{height:10px;border-radius:99px;background:var(--card2);overflow:hidden;margin:8px 0 4px}
+.bar>i{display:block;height:100%;background:var(--lime);border-radius:99px;transition:width .4s}
+.bar.amber>i{background:var(--amber)} .bar.red>i{background:var(--red)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn{background:var(--lime);color:#111;border:0;border-radius:12px;padding:12px 16px;font:700 14px Inter;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card2);color:var(--txt)}
+.btn.sm{padding:7px 11px;font-size:13px;border-radius:10px}
+.btn.full{width:100%}
+.btn.danger{background:transparent;color:var(--red);padding:6px 8px}
+label.f{display:block;font-size:12px;color:var(--mut);margin-bottom:10px}
+label.f span{display:block;margin-bottom:4px}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;font:500 15px Inter;outline:none}
+input:focus,select:focus{border-color:var(--lime)}
+.seg{display:flex;background:var(--card2);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;color:var(--mut);padding:9px;border-radius:9px;font:700 13px Inter;cursor:pointer}
+.seg button.on{background:var(--lime);color:#111}
+.seg button.on.out{background:var(--red);color:#111}
+/* etapas */
+.fase{margin-bottom:14px}
+.fase-h{display:flex;align-items:center;gap:12px;cursor:pointer}
+.fase-n{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:800 15px Archivo;background:var(--card2);flex:none}
+.fase.done .fase-n{background:var(--lime);color:#111}
+.fase-h .t{flex:1}
+.fase-h .t b{font:800 16px Archivo;display:block}
+.fase-h .t small{color:var(--mut);font-size:12px}
+.passo{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.passo:first-of-type{margin-top:12px}
+.ck{width:24px;height:24px;border-radius:7px;border:2px solid #55575d;flex:none;display:grid;place-items:center;cursor:pointer;margin-top:1px;background:none;color:#111;font-weight:900}
+.passo.on .ck{background:var(--lime);border-color:var(--lime)}
+.passo.on .pt{text-decoration:line-through;color:var(--mut)}
+.pt{font-weight:600}
+.pd{color:var(--mut);font-size:13px;margin-top:3px}
+.pd b{color:var(--txt)}
+.dica{background:#1d2410;border:1px solid #33401a;border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:14px}
+.dica.warn{background:#2a2110;border-color:#4a3a14}
+.dica b{color:var(--lime)} .dica.warn b{color:var(--amber)}
+/* lançamentos */
+.lanc{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.lanc .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:15px}
+.lanc .dot.e{background:#26331a;color:var(--lime)} .lanc .dot.s{background:#3a1f1c;color:var(--red)}
+.lanc .i{flex:1;min-width:0}
+.lanc .i b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lanc .i small{color:var(--mut);font-size:12px}
+.lanc .val{font:700 15px Archivo;white-space:nowrap}
+.cat{margin-bottom:9px}
+.cat .row{font-size:13px}
+.cat .bar{height:7px;margin:4px 0 0}
+.chart{display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:6px}
+.chart .m{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.chart .bs{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;justify-content:center}
+.chart .bs i{width:42%;max-width:16px;border-radius:5px 5px 2px 2px;background:var(--lime);min-height:2px}
+.chart .bs i.s{background:var(--red)}
+.chart small{font-size:11px;color:var(--mut)}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--mut);margin-top:8px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* preços */
+.canal{background:var(--card2);border-radius:14px;padding:14px;margin-bottom:10px}
+.canal .hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.canal .hd b{font:800 16px Archivo}
+.canal .preco{font:900 30px Archivo;color:var(--lime);line-height:1.1}
+.canal .ln{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);padding:2px 0}
+.canal .ln span:last-child{color:var(--txt)}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;background:#26331a;color:var(--lime)}
+.badge.o{background:#3b2410;color:#ffa45a} .badge.b{background:#122a3a;color:var(--blue)} .badge.r{background:#3a1f1c;color:var(--red)}
+details.cfg summary{cursor:pointer;color:var(--lime);font-weight:600;font-size:14px;list-style:none}
+details.cfg summary::-webkit-details-marker{display:none}
+details.cfg[open] summary{margin-bottom:12px}
+.prod{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:center}
+.prod .sw{width:44px;height:44px;border-radius:12px;background:var(--card2);display:grid;place-items:center;font-size:20px;flex:none}
+.prod .i{flex:1;min-width:0}
+.prod .i b{display:block}
+.prod .i small{color:var(--mut);font-size:12px}
+.est{font:800 18px Archivo;text-align:right}
+.est small{display:block;font:500 11px Inter;color:var(--mut)}
+.empty{color:var(--mut);text-align:center;padding:18px 6px;font-size:14px}
+textarea{min-height:92px;resize:vertical;line-height:1.45}
+.pq{padding:14px 0;border-top:1px solid var(--line)}
+.pq:first-of-type{border-top:0;padding-top:4px}
+.pq .q{font-weight:700;display:flex;gap:8px;align-items:flex-start}
+.pq .q .ok{color:var(--lime);font-size:13px;flex:none;margin-top:2px}
+.pq .h{color:var(--mut);font-size:13px;margin:3px 0 8px}
+.big{font:900 26px Archivo;line-height:1.1}
+.inv{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.inv input:first-child{flex:1}
+.inv input.v{width:110px;flex:none}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl td,.tbl th{padding:8px 4px;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th{color:var(--mut);font-weight:600;font-size:12px;border-top:0}
+.tbl td:first-child,.tbl th:first-child{text-align:left;white-space:normal}
+.tbl tr.tot td{font-weight:800;border-top:2px solid var(--line)}
+.tbl tr.sub td{color:var(--mut)}
+.var{font-size:11px;font-weight:700;padding:2px 6px;border-radius:99px;margin-left:6px}
+.var.up{background:#26331a;color:var(--lime)} .var.dn{background:#3a1f1c;color:var(--red)}
+.chk{display:flex;align-items:center;gap:10px;font-size:14px;margin-bottom:12px;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:#c8f53a;flex:none}
+.login{max-width:380px;margin:0 auto;padding:18vh 22px 40px;text-align:center}
+.login img{width:220px;max-width:70%;height:auto;margin-bottom:6px}
+.login form{text-align:left;margin-top:26px}
+.gloss dt{font-weight:700;color:var(--lime);margin-top:10px}
+.gloss dd{color:var(--mut);font-size:13.5px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.modal .sheet{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:760px;max-height:90vh;overflow:auto;border:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--lime);color:#111;font-weight:700;padding:10px 16px;border-radius:12px;z-index:30;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.mt{margin-top:10px}.mb{margin-bottom:10px}
+.small{font-size:12.5px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script id="main-js">
+(function(){
+"use strict";
+
+/* ---------- estado ---------- */
+var PADRAO = {
+  marca: "Vayro Street",
+  logo: "a",
+  abertura: "",            // AAAA-MM
+  dasValor: 82.05,
+  etapas: {},
+  lancamentos: [],
+  produtos: [],
+  taxas: {
+    shopeeFaixas: [
+      {min:0,   pct:20, fixa:4.5},
+      {min:80,  pct:14, fixa:16},
+      {min:100, pct:14, fixa:20},
+      {min:200, pct:14, fixa:26}
+    ],
+    sheinPct: 16, sheinLog: 0,
+    diretaPct: 0, diretaFixa: 0
+  },
+  plano: {
+    textos: {},
+    pecasMes: 60, preco: 79.9, reserva: 1000,
+    mix: {shopee:50, shein:20, direta:30},
+    inv: [
+      {id:"i1", nome:"Prensa térmica", valor:1200},
+      {id:"i2", nome:"Primeiro lote de camisetas lisas", valor:600},
+      {id:"i3", nome:"Primeiro lote de estampas (DTF)", valor:300},
+      {id:"i4", nome:"Embalagens e tags", valor:150}
+    ]
+  },
+  tipoReceita: "revenda",
+  calc: {camiseta:22, estampa:8, embalagem:2.5, outros:1, fixosMes:150, pecasMes:40, margem:30, teste:69.9},
+  atualizado: 0
+};
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function mesclar(base, dado){
+  var r = clone(base);
+  if(!dado || typeof dado!=="object") return r;
+  Object.keys(dado).forEach(function(k){
+    if(base[k] && typeof base[k]==="object" && !Array.isArray(base[k]) && dado[k] && typeof dado[k]==="object" && !Array.isArray(dado[k])) r[k]=mesclar(base[k],dado[k]);
+    else r[k]=dado[k];
+  });
+  return r;
+}
+var S = mesclar(PADRAO, {});
+if(S.marca==="Minha Marca Fit") S.marca="Vayro Street";
+var LOGOS = {a:"data:image/webp;base64,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", b:"data:image/webp;base64,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"};
+
+/* ---------- nuvem (Supabase) ---------- */
+var SB_URL = "https://sevtmfduertuoumwwjlk.supabase.co";
+var SB_PUB = "sb_publishable_hDfwBCDV4Aa9knHFv_MEJg_2ngSuk6a";
+var SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnRtZmR1ZXJ0dW91bXd3amxrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NDU1MTIsImV4cCI6MjEwOTAyMTUxMn0.jzoNQ9dksk0vujgri40M7_rMkZQdB-RStzu_FrSYCzo";
+var SENHA_KEY = "vayro_senha", CACHE_KEY = "vayro_cache_v1";
+var senha = null, versao = null, logado = false, usarAnon = false;
+try{ senha = localStorage.getItem(SENHA_KEY); }catch(e){}
+try{ var cc = JSON.parse(localStorage.getItem(CACHE_KEY)||"null"); if(cc && cc.dados){ S = mesclar(PADRAO, cc.dados); versao = cc.versao; } }catch(e){}
+function guardarCache(){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({dados:S, versao:versao})); }catch(e){} }
+function rpc(fn, body){
+  function chamar(anon){
+    var h = {"Content-Type":"application/json", "apikey": anon?SB_ANON:SB_PUB};
+    if(anon) h["Authorization"] = "Bearer "+SB_ANON;
+    return fetch(SB_URL+"/rest/v1/rpc/"+fn, {method:"POST", headers:h, body:JSON.stringify(body)});
+  }
+  return chamar(usarAnon).then(function(r){
+    if((r.status===401||r.status===403) && !usarAnon){ usarAnon=true; return chamar(true); }
+    return r;
+  }).then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.json(); });
+}
+function sair(msg){
+  try{ localStorage.removeItem(SENHA_KEY); localStorage.removeItem(CACHE_KEY); }catch(e){}
+  senha=null; logado=false; versao=null; S=mesclar(PADRAO,{}); telaLogin(msg||"");
+}
+function telaLogin(msg, carregando){
+  var app=document.getElementById("app");
+  app.innerHTML='<div class="login"><img src="'+LOGOS.a+'" alt="Vayro Street"><div class="sub">Painel do MEI</div>'+
+   (carregando?'<div class="small mt">Carregando…</div>':
+   '<form id="fLogin"><label class="f"><span>Senha do painel</span><input type="password" name="senha" autocomplete="current-password" placeholder="Digite a senha" required></label>'+
+   (msg?'<div class="small" style="color:var(--red);margin-bottom:10px">'+esc(msg)+'</div>':'')+
+   '<button class="btn full" type="submit">Entrar</button><div class="small mt">A senha fica lembrada neste aparelho. Cada sócio usa a mesma senha.</div></form>')+'</div>';
+}
+function entrar(s, silencioso){
+  return rpc("vayro_get", {p_senha:s}).then(function(r){
+    if(!r || !r.ok){ if(silencioso) sair("A senha mudou. Entre com a nova senha."); else telaLogin("Senha incorreta. Confira e tente de novo."); return; }
+    senha=s; try{ localStorage.setItem(SENHA_KEY, s); }catch(e){}
+    S = mesclar(PADRAO, r.dados||{}); versao = r.versao; guardarCache();
+    if(S.marca==="Minha Marca Fit") S.marca="Vayro Street";
+    logado=true; statusSalvo="ok"; render();
+  }).catch(function(){
+    if(silencioso && senha){ logado=true; statusSalvo="off"; render(); }
+    else telaLogin("Sem conexão com a internet. Tente de novo.");
+  });
+}
+var salvarTimer=null, statusSalvo="ok", enviando=false, pendente=false;
+function salvar(){
+  S.atualizado = Date.now();
+  guardarCache();
+  statusSalvo="pend"; atualizaChip();
+  clearTimeout(salvarTimer);
+  salvarTimer = setTimeout(enviar, 1000);
+}
+function unirPorId(a, b){ var m={}, out=[]; (a||[]).forEach(function(x){ if(x&&x.id){ m[x.id]=x; } }); (b||[]).forEach(function(x){ if(x&&x.id) m[x.id]=x; }); Object.keys(m).forEach(function(k){ out.push(m[k]); }); return out; }
+function enviar(){
+  if(!senha) return;
+  if(enviando){ pendente=true; return; }
+  enviando=true; pendente=false;
+  rpc("vayro_set", {p_senha:senha, p_dados:S, p_versao:versao}).then(function(r){
+    enviando=false;
+    if(r.ok){ versao=r.versao; guardarCache(); statusSalvo="ok"; atualizaChip(); if(pendente) enviar(); return; }
+    if(r.erro==="senha"){ sair("A senha do painel foi trocada. Entre com a nova senha."); return; }
+    if(r.erro==="conflito"){
+      var srv = mesclar(PADRAO, r.dados||{});
+      S.lancamentos = unirPorId(srv.lancamentos, S.lancamentos);
+      S.produtos = unirPorId(srv.produtos, S.produtos);
+      Object.keys(srv.etapas||{}).forEach(function(k){ if(srv.etapas[k] && S.etapas[k]===undefined) S.etapas[k]=true; });
+      versao = r.versao; guardarCache(); render();
+      toast("Juntei com o que o outro sócio salvou ✔");
+      enviar(); return;
+    }
+    statusSalvo="off"; atualizaChip();
+  }).catch(function(){
+    enviando=false; statusSalvo="off"; atualizaChip();
+    clearTimeout(salvarTimer); salvarTimer=setTimeout(enviar, 15000);
+  });
+}
+function buscarNovidades(){
+  if(!logado || !senha || enviando || statusSalvo==="pend" || modalHtml) return;
+  var foco=document.activeElement; if(foco && /INPUT|TEXTAREA|SELECT/.test(foco.tagName)) return;
+  rpc("vayro_get", {p_senha:senha}).then(function(r){
+    if(!r || !r.ok){ if(r && r.erro==="senha") sair("A senha do painel foi trocada. Entre com a nova senha."); return; }
+    if(statusSalvo==="off"){ enviar(); return; }
+    if(r.versao!==versao && statusSalvo!=="pend" && !enviando){ S=mesclar(PADRAO, r.dados||{}); versao=r.versao; guardarCache(); render(); }
+  }).catch(function(){});
+}
+setInterval(function(){ if(!document.hidden) buscarNovidades(); }, 20000);
+document.addEventListener("visibilitychange", function(){ if(!document.hidden) buscarNovidades(); });
+function atualizaChip(){
+  var c = document.getElementById("chipSalvo"); if(!c) return;
+  var m = {ok:["✓ Salvo na nuvem","chip ok"], pend:["Salvando…","chip"], off:["Sem internet · salvo no aparelho","chip warn"]}[statusSalvo] || ["","chip"];
+  c.textContent=m[0]; c.className=m[1];
+}
+
+/* ---------- utilidades ---------- */
+var fmt = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+function R(v){ return fmt.format(isFinite(v)?v:0); }
+function num(v){ var s=String(v==null?"":v).trim(); if(s.indexOf(",")>-1) s=s.replace(/\./g,"").replace(",","."); var n=parseFloat(s); return isFinite(n)?n:0; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function hoje(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function mesAtual(){ return hoje().slice(0,7); }
+var MESES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+function nomeMes(am){ var p=am.split("-"); return MESES[+p[1]-1]+"/"+p[0].slice(2); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function toast(t){ var d=document.createElement("div"); d.className="toast"; d.textContent=t; document.body.appendChild(d); setTimeout(function(){d.remove();},2200); }
+
+/* ---------- conteúdo: etapas ---------- */
+var FASES = [
+ {t:"Planejar a marca", s:"Antes de abrir o CNPJ", passos:[
+  ["nome","Escolher o nome da marca","Pense em algo curto e fácil de lembrar. Depois pesquise se já existe: no <b>INPI</b> (<a href='https://busca.inpi.gov.br' target='_blank'>busca.inpi.gov.br</a>), no Instagram e na Shopee. Registrar a marca no INPI é opcional no começo, mas protege vocês."],
+  ["publico","Definir o cliente","Quem vai usar? Ex.: quem treina musculação, crossfit, corrida. Isso define o estilo: <b>dry fit</b> (treino pesado), <b>algodão oversized</b> (estilo/rua), <b>regata</b>."],
+  ["tecnica","Escolher a técnica de estampa","<b>DTF</b>: funciona em algodão e dry fit, ótimo pra começar com pouca quantidade. <b>Silk</b>: barato em grande quantidade. <b>Sublimação</b>: só em tecido de poliéster claro (dry fit branco/claro)."],
+  ["fornec","Achar fornecedores e pedir amostras","Peça amostra de pelo menos 2 fornecedores de camiseta lisa. Teste caimento, tecido e lavagem antes de comprar quantidade."],
+  ["custo","Calcular o custo de cada camiseta","Use a aba <b>Preços</b> aqui da plataforma. Saber o custo é o que separa lucro de prejuízo!"],
+  ["caixa","Separar o dinheiro do começo","É o <b>capital de giro</b>: dinheiro pra comprar o primeiro lote, embalagens e segurar uns 30 dias até as plataformas repassarem as vendas."]
+ ]},
+ {t:"Abrir o MEI", s:"É grátis e 100% online", passos:[
+  ["govbr","Criar conta gov.br (nível prata ou ouro)","Pelo app ou site gov.br. Dá pra subir de nível validando pelo app do banco ou reconhecimento facial."],
+  ["portal","Entrar no Portal do Empreendedor","Acesse o site oficial (<a href='https://www.gov.br/empresas-e-negocios/pt-br/empreendedor' target='_blank'>gov.br/empreendedor</a>) → “Quero ser MEI” → “Formalize-se”. <b>Abrir MEI é gratuito</b> — fuja de sites que cobram."],
+  ["ativ","Escolher as atividades (ocupações)","Sugestão pro seu caso: principal <b>Comerciante de artigos do vestuário e acessórios independente</b> e secundária <b>Estampador(a) de peças do vestuário independente</b>. Na tela final o portal mostra o valor do DAS — anote aqui no Início."],
+  ["end","Informar endereço","Pode ser o de casa. Se pedir, faça a consulta prévia na prefeitura (algumas exigem)."],
+  ["ccmei","Baixar o CCMEI","É o certificado da empresa (tipo o “RG” do MEI) com o número do <b>CNPJ</b>. Salve em PDF no celular e no computador."],
+  ["ie","Conferir a Inscrição Estadual","Como vocês vão vender produto, precisa da <b>Inscrição Estadual</b> pra emitir nota. Em muitos estados sai automático; se não, peça na Secretaria da Fazenda (Sefaz) do estado."]
+ ]},
+ {t:"Organizar a casa", s:"Dinheiro separado = empresa saudável", passos:[
+  ["contapj","Abrir conta PJ","Bancos digitais têm conta PJ grátis pra MEI. Use só pra empresa."],
+  ["separar","Separar dinheiro pessoal do da empresa","Regra de ouro! Definam uma <b>retirada fixa</b> por mês (pró-labore) em vez de tirar dinheiro do caixa a toda hora."],
+  ["nota","Configurar o emissor de nota fiscal","Pra venda de produto é a <b>NF-e</b>. Dá pra emitir pelo sistema da Sefaz do estado ou por um sistema/ERP (muitos integram com Shopee e Shein)."],
+  ["das","Colocar lembrete do DAS no dia 20","O DAS é o imposto mensal fixo do MEI. Vence <b>todo dia 20</b>, mesmo sem vendas no mês. Dá pra colocar em débito automático."],
+  ["limite","Entender o limite do MEI","Pode faturar até <b>R$ 81 mil por ano</b> (média de R$ 6.750/mês). A aba Início mostra quanto já foi usado."]
+ ]},
+ {t:"Criar o produto", s:"A primeira coleção", passos:[
+  ["estampas","Criar as primeiras estampas","Comece com uma coleção pequena: <b>3 a 5 estampas</b>. Menos estoque parado, mais foco."],
+  ["piloto","Fazer peças-piloto e testar lavagem","Lave umas 5 vezes e veja se a estampa racha ou desbota. Melhor descobrir agora do que numa avaliação 1 estrela."],
+  ["medidas","Montar a tabela de medidas","P, M, G, GG com largura e comprimento em cm. Reduz muito as devoluções!"],
+  ["fotos","Tirar fotos de produto","Luz natural, fundo limpo e fotos com alguém vestindo — de preferência na academia."],
+  ["emb","Embalagem e etiqueta","Saquinho, tag com a marca e um cartãozinho de agradecimento pedindo avaliação."]
+ ]},
+ {t:"Começar a vender", s:"Bora pra primeira venda!", passos:[
+  ["shopee","Abrir a loja na Shopee como CNPJ","No <a href='https://seller.shopee.com.br' target='_blank'>Seller Center da Shopee</a>. Vendedor CNPJ tem vantagens e vende sem limite de pedidos sem taxa extra."],
+  ["shein","Pedir cadastro como vendedor na Shein","A Shein exige CNPJ e passa por aprovação (pode demorar). Procure “vender na Shein” e use só o site oficial."],
+  ["redes","Criar Instagram e TikTok da marca","Mostre o treino com a camiseta, bastidores da estampa, lançamentos. Venda direta não paga comissão!"],
+  ["parcerias","Fechar parcerias com academias e personais","Ofereça camisetas pra personal usar ou um cupom pros alunos da academia."],
+  ["precos","Definir o preço de cada canal","Cada plataforma cobra diferente — use a aba Preços pra não perder dinheiro."],
+  ["primeira","Fazer a primeira venda 🎉","Registrem na aba Produtos → “Registrar venda”. Comemorem!"]
+ ]},
+ {t:"Rotina de todo mês", s:"Hábitos que mantêm tudo em dia", passos:[
+  ["r_lanc","Lançar todas as entradas e saídas","Toda compra e toda venda vai na aba Dinheiro. 5 minutinhos por dia evitam bagunça."],
+  ["r_das","Pagar o DAS até o dia 20","Atrasar gera multa e juros, e pode tirar o direito a benefícios do INSS."],
+  ["r_rel","Fazer o Relatório Mensal de Receitas","É obrigatório guardar (não precisa enviar): quanto vendeu no mês, com e sem nota. Os números da aba Dinheiro servem de base."],
+  ["r_rep","Conferir os repasses das plataformas","Compare o que a Shopee/Shein pagou com o que vocês esperavam receber."],
+  ["r_dasn","Declaração anual (DASN-SIMEI) até 31 de maio","Uma vez por ano, informa quanto a empresa faturou no ano anterior. É rápida e feita no Portal do Empreendedor."]
+ ]}
+];
+var TOTAL_PASSOS = FASES.reduce(function(a,f){return a+f.passos.length;},0);
+
+var CAT_E = ["Venda Shopee","Venda Shein","Venda direta / Instagram","Outras entradas"];
+var CAT_INV = "Investimento inicial (prensa, máquinas…)";
+var CAT_S = [CAT_INV,"Camisetas lisas","Estampa / insumos (DTF, tinta)","Embalagem e etiquetas","Frete / envio","Taxas de plataforma","DAS (imposto do MEI)","Anúncios / marketing","Equipamentos","Retirada dos sócios (pró-labore)","Outras saídas"];
+var CANAIS = [{id:"shopee",n:"Shopee",cat:"Venda Shopee",b:"o"},{id:"shein",n:"Shein",cat:"Venda Shein",b:"r"},{id:"direta",n:"Venda direta",cat:"Venda direta / Instagram",b:"b"}];
+
+/* ---------- cálculos ---------- */
+function taxa(canal, p){
+  var t=S.taxas;
+  if(canal==="shopee"){
+    var fx=t.shopeeFaixas.slice().sort(function(a,b){return b.min-a.min;}).find(function(f){return p>=f.min;}) || t.shopeeFaixas[0];
+    return p*num(fx.pct)/100 + num(fx.fixa);
+  }
+  if(canal==="shein") return p*num(t.sheinPct)/100 + num(t.sheinLog);
+  return p*num(t.diretaPct)/100 + num(t.diretaFixa);
+}
+function custoPeca(){
+  var c=S.calc;
+  return num(c.camiseta)+num(c.estampa)+num(c.embalagem)+num(c.outros)+ num(c.fixosMes)/Math.max(1,num(c.pecasMes));
+}
+function precoIdeal(canal, custo, margem){
+  var m=margem/100;
+  for(var cent=100; cent<=500000; cent++){
+    var p=cent/100, l=p-taxa(canal,p)-custo;
+    if(l>0 && l/p>=m) return p;
+  }
+  return null;
+}
+function arredonda90(p){ if(p==null) return null; var r=Math.floor(p)+0.9; if(r<p) r+=1; return r; }
+function minimoSemPrejuizo(canal,custo){ return precoIdeal(canal,custo,0.0001); }
+
+function doMes(am){ return S.lancamentos.filter(function(l){return (l.data||"").slice(0,7)===am;}); }
+function soma(arr,tipo){ return arr.filter(function(l){return l.tipo===tipo;}).reduce(function(a,l){return a+num(l.valor);},0); }
+function ehInvest(l){ return l.tipo==="s" && (l.categoria===CAT_INV || l.categoria==="Equipamentos"); }
+function retorno(){
+  var inv=0, op=0, porMes={};
+  S.lancamentos.forEach(function(l){
+    var v=num(l.valor), m=(l.data||"").slice(0,7);
+    if(ehInvest(l)){ inv+=v; return; }
+    var x = l.tipo==="e"?v:-v; op+=x; porMes[m]=(porMes[m]||0)+x;
+  });
+  var ms=Object.keys(porMes).sort().slice(-3), media= ms.length? ms.reduce(function(a,m){return a+porMes[m];},0)/ms.length : 0;
+  var falta=Math.max(0,inv-Math.max(0,op));
+  return {inv:inv, op:op, pct: inv>0? Math.max(0,Math.min(100,op/inv*100)) : 0, falta:falta, media:media, meses: (falta>0 && media>0)? Math.ceil(falta/media) : null};
+}
+function cardRetorno(compacto){
+  var r=retorno();
+  if(r.inv<=0) return compacto ? '' : '<div class="card"><h3>🏗️ Investimento inicial</h3><div class="small">Quando lançarem a prensa e outras compras do começo como <b style="color:var(--txt)">Saída → Investimento inicial</b>, aqui aparece quanto as vendas já pagaram desse investimento.</div></div>';
+  var h='<div class="card"><div class="row"><h3 style="margin:0">🏗️ Retorno do investimento</h3>'+(compacto?'<button class="btn sm ghost" data-ir="dinheiro">Abrir</button>':'')+'</div>';
+  h+='<div class="grid g2 mt"><div class="stat"><div class="l">Investido</div><div class="v">'+R(r.inv)+'</div></div><div class="stat"><div class="l">Já pago pelas vendas</div><div class="v '+(r.op>=0?"pos":"neg")+'">'+R(Math.max(0,Math.min(r.op,r.inv)))+'</div></div></div>';
+  h+='<div class="row mt"><span class="small">Investimento recuperado</span><b class="pos">'+Math.round(r.pct)+'%</b></div><div class="bar"><i style="width:'+r.pct+'%"></i></div>';
+  if(r.pct>=100) h+='<div class="small">🏆 Investimento pago! A partir de agora, o que sobra é lucro de verdade.</div>';
+  else if(r.meses) h+='<div class="small">Faltam '+R(r.falta)+'. No ritmo dos últimos meses ('+R(r.media)+'/mês), paga em uns <b style="color:var(--txt)">'+r.meses+' '+(r.meses>1?"meses":"mês")+'</b>. Bora vender! 🚀</div>';
+  else h+='<div class="small">Faltam '+R(r.falta)+'. Assim que as vendas passarem os custos do mês, aparece aqui a previsão de quando o investimento se paga.</div>';
+  if(!compacto) h+='<div class="small mt">Conta como investimento: “Investimento inicial” e “Equipamentos”. O lucro das vendas é tudo que entrou menos as outras saídas.</div>';
+  return h+'</div>';
+}
+function limiteAno(){
+  var ano=new Date().getFullYear();
+  if(S.abertura && +S.abertura.slice(0,4)===ano){ var mesAb=+S.abertura.slice(5,7); return 6750*(12-mesAb+1); }
+  return 81000;
+}
+function faturadoAno(){ var ano=String(new Date().getFullYear()); return S.lancamentos.filter(function(l){return l.tipo==="e" && (l.data||"").slice(0,4)===ano;}).reduce(function(a,l){return a+num(l.valor);},0); }
+
+/* ---------- navegação ---------- */
+var ABAS=[["inicio","🏠","Início"],["etapas","✅","Etapas"],["dinheiro","💰","Dinheiro"],["precos","🏷️","Preços"],["produtos","👕","Produtos"],["plano","📋","Plano"],["relatorio","📊","Relatório"]];
+var aba="inicio";
+try{ var sa=sessionStorage.getItem("meirafa_aba"); if(sa) aba=sa; }catch(e){}
+if(location.hash && ABAS.some(function(a){return "#"+a[0]===location.hash;})) aba=location.hash.slice(1);
+var mesSel=mesAtual(), novoTipo="e", faseAberta=null;
+window.addEventListener("hashchange",function(){ var h=location.hash.slice(1); if(ABAS.some(function(a){return a[0]===h;})){aba=h;render();} });
+function irPara(a){ aba=a; try{ if(location.hash!=="#"+a) location.hash=a; }catch(e){} try{sessionStorage.setItem("meirafa_aba",a);}catch(e){} render(); window.scrollTo(0,0); }
+
+/* ---------- telas ---------- */
+function telaInicio(){
+  var feitos=Object.keys(S.etapas).filter(function(k){return S.etapas[k];}).length;
+  var pct=Math.round(feitos/TOTAL_PASSOS*100);
+  var prox=null, proxFase=null;
+  FASES.some(function(f,fi){ return f.passos.some(function(p){ if(!S.etapas[p[0]]){prox=p;proxFase=fi;return true;} return false; }); });
+  var am=mesAtual(), lm=doMes(am), e=soma(lm,"e"), s=soma(lm,"s");
+  var fat=faturadoAno(), lim=limiteAno(), pl=Math.min(100,fat/lim*100);
+  var d=new Date(), venc=new Date(d.getFullYear(), d.getMonth() + (d.getDate()>20?1:0), 20);
+  var dias=Math.round((venc-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/86400000);
+  var h='';
+  h+='<div class="card hero"><div class="tag">Bora construir essa marca 💪</div>'+(LOGOS[S.logo]?'<img class="hero-logo" src="'+LOGOS[S.logo]+'" alt="'+esc(S.marca)+'">':'<h1>'+esc(S.marca)+'</h1>');
+  h+='<div class="sub">Camisetas personalizadas pra galera da academia, com estampa própria.</div>';
+  h+='<div class="row mt"><span class="small">Caminho até a loja funcionando</span><b class="pos">'+pct+'%</b></div><div class="bar"><i style="width:'+pct+'%"></i></div>';
+  h+='<div class="small">'+feitos+' de '+TOTAL_PASSOS+' passos concluídos</div></div>';
+  if(prox){
+    h+='<div class="card"><div class="small">👉 Próximo passo · Fase '+(proxFase+1)+': '+FASES[proxFase].t+'</div><h2 class="mt">'+prox[1]+'</h2><div class="pd mt">'+prox[2]+'</div>';
+    h+='<div class="grid g2 mt"><button class="btn" data-ck="'+prox[0]+'">✓ Feito!</button><button class="btn ghost" data-ir="etapas">Ver todas</button></div></div>';
+  } else {
+    h+='<div class="card hero"><h2>🏆 Todas as etapas concluídas!</h2><div class="sub">Agora é manter a rotina do mês e crescer.</div></div>';
+  }
+  h+='<div class="card"><div class="row"><h3>Resumo de '+nomeMes(am)+'</h3><button class="btn sm ghost" data-ir="dinheiro">Abrir</button></div>';
+  h+='<div class="grid g3"><div class="stat"><div class="l">Entrou</div><div class="v pos">'+R(e)+'</div></div><div class="stat"><div class="l">Saiu</div><div class="v neg">'+R(s)+'</div></div><div class="stat"><div class="l">Sobrou</div><div class="v '+(e-s>=0?"pos":"neg")+'">'+R(e-s)+'</div></div></div></div>';
+  h+=cardRetorno(true);
+  h+='<div class="card"><h3>Limite do MEI em '+new Date().getFullYear()+'</h3>';
+  h+='<div class="row"><span class="small">Faturado: <b style="color:var(--txt)">'+R(fat)+'</b></span><span class="small">de '+R(lim)+'</span></div>';
+  h+='<div class="bar '+(pl>90?"red":pl>70?"amber":"")+'"><i style="width:'+pl+'%"></i></div>';
+  h+='<div class="small">'+(pl>=100?"⚠️ Passou do limite! Falem com um contador sobre virar Microempresa (ME).":pl>80?"⚠️ Chegando perto do limite — hora de conversar com um contador.":"Sobra "+R(Math.max(0,lim-fat))+" pra faturar esse ano. Tranquilo!")+'</div>';
+  if(S.abertura && +S.abertura.slice(0,4)===new Date().getFullYear()) h+='<div class="small mt">Como o MEI abriu em '+nomeMes(S.abertura)+', o limite deste ano é proporcional (R$ 6.750 × meses).</div>';
+  h+='</div>';
+  h+='<div class="card"><div class="row"><div><h3 style="margin:0">DAS do mês</h3><div class="small">Imposto fixo do MEI · vence dia 20</div></div><div style="text-align:right"><div class="disp" style="font-size:20px;font-weight:800">'+R(num(S.dasValor))+'</div><div class="small">'+(dias===0?"vence hoje!":"faltam "+dias+" dia"+(dias>1?"s":""))+'</div></div></div>';
+  var pagoDas = lm.some(function(l){return l.tipo==="s" && l.categoria==="DAS (imposto do MEI)";});
+  h+= pagoDas ? '<div class="dica mt" style="margin-bottom:0">✅ DAS deste mês já lançado como pago.</div>' : '<button class="btn ghost full mt" data-das>Marcar DAS deste mês como pago</button>';
+  h+='</div>';
+  h+='<div class="card"><details class="cfg"><summary>⚙️ Dados da empresa</summary>';
+  h+='<div class="small" style="margin-bottom:6px">Logo da marca (toque pra trocar)</div><div class="logos">'+[["a","Opção 1 · estrela"],["b","Opção 2 · linhas"]].map(function(o){return '<button data-logo="'+o[0]+'" class="'+(S.logo===o[0]?"on":"")+'"><img src="'+LOGOS[o[0]]+'" alt="">'+o[1]+'</button>';}).join("")+'</div>';
+  h+='<label class="f"><span>Nome da marca</span><input data-cfg="marca" value="'+esc(S.marca)+'"></label>';
+  h+='<div class="grid g2"><label class="f"><span>Mês que o MEI abriu</span><input type="month" data-cfg="abertura" value="'+esc(S.abertura)+'"></label>';
+  h+='<label class="f"><span>Valor do DAS (R$)</span><input inputmode="decimal" data-cfg="dasValor" value="'+esc(S.dasValor)+'"></label></div>';
+  h+='<div class="small">Em 2026 o DAS é R$ 82,05 pra comércio/indústria e R$ 87,05 se tiver comércio + serviço. Confira o valor exato que aparecer no Portal do Empreendedor.</div>';
+  h+='<h3 class="mt" style="margin-top:18px">🔐 Acesso ao painel</h3><form id="fSenha"><label class="f"><span>Nova senha do painel (mín. 10 caracteres)</span><input type="text" name="nova" autocomplete="new-password" placeholder="Ex.: Treino-Forte-2026"></label><button class="btn ghost full" type="submit">Trocar senha</button></form>';
+  h+='<button class="btn danger full mt" data-sair>Sair deste aparelho</button>';
+  h+='</details></div>';
+  h+='<div class="card"><h3>📖 Dicionário do MEI</h3><dl class="gloss">'+
+   '<dt>MEI</dt><dd>Microempreendedor Individual. A forma mais simples de ter empresa: 1 dono, até 1 funcionário e até R$ 81 mil de faturamento por ano.</dd>'+
+   '<dt>CNPJ</dt><dd>O “CPF” da empresa.</dd>'+
+   '<dt>CCMEI</dt><dd>Certificado que prova que a empresa existe. Sai na hora que abre o MEI.</dd>'+
+   '<dt>DAS</dt><dd>Boleto mensal com os impostos do MEI. Valor fixo, vence dia 20, mesmo sem vender.</dd>'+
+   '<dt>DASN-SIMEI</dt><dd>Declaração anual do faturamento, até 31 de maio.</dd>'+
+   '<dt>NF-e</dt><dd>Nota fiscal eletrônica de produto. As plataformas pedem pra vendedor CNPJ.</dd>'+
+   '<dt>Faturamento</dt><dd>Tudo que entrou de vendas, antes de tirar os custos.</dd>'+
+   '<dt>Lucro</dt><dd>O que sobra depois de pagar tudo (camiseta, estampa, taxas, frete, DAS…).</dd>'+
+   '<dt>Margem</dt><dd>Quanto do preço vira lucro, em %. Margem 30% num preço de R$ 100 = R$ 30 de lucro.</dd>'+
+   '<dt>Capital de giro</dt><dd>Dinheiro reservado pra manter a operação enquanto as vendas não pagam tudo.</dd>'+
+   '<dt>Pró-labore</dt><dd>Retirada fixa que o dono tira pra si todo mês.</dd>'+
+   '</dl></div>';
+  h+='<div class="dica warn"><b>Lembrete importante:</b> o MEI tem um dono só. Se forem duas pessoas tocando o negócio, só uma fica como dona do CNPJ — combinem bem como vai ser a divisão (por escrito é melhor!).</div>';
+  return h;
+}
+
+function telaEtapas(){
+  var h='<div class="dica"><b>Como usar:</b> vá marcando cada passo quando terminar. Toque na fase pra abrir ou fechar. Sem pressa — um passo de cada vez! 🚀</div>';
+  FASES.forEach(function(f,fi){
+    var n=f.passos.filter(function(p){return S.etapas[p[0]];}).length, done=n===f.passos.length;
+    var aberta = faseAberta===null ? (!done && FASES.slice(0,fi).every(function(ff){return ff.passos.every(function(p){return S.etapas[p[0]];});})) : faseAberta===fi;
+    h+='<div class="card fase'+(done?" done":"")+'"><div class="fase-h" data-fase="'+fi+'"><div class="fase-n">'+(done?"✓":fi+1)+'</div><div class="t"><b>'+f.t+'</b><small>'+f.s+' · '+n+'/'+f.passos.length+'</small></div><span class="sub">'+(aberta?"▲":"▼")+'</span></div>';
+    if(aberta){
+      f.passos.forEach(function(p){
+        var on=!!S.etapas[p[0]];
+        h+='<div class="passo'+(on?" on":"")+'"><button class="ck" data-ck="'+p[0]+'" aria-label="Marcar">'+(on?"✓":"")+'</button><div><div class="pt">'+p[1]+'</div><div class="pd">'+p[2]+'</div></div></div>';
+      });
+    }
+    h+='</div>';
+  });
+  return h;
+}
+
+function telaDinheiro(){
+  var lm=doMes(mesSel).slice().sort(function(a,b){return (b.data||"").localeCompare(a.data||"");});
+  var e=soma(lm,"e"), s=soma(lm,"s"), inv=lm.filter(ehInvest).reduce(function(a,l){return a+num(l.valor);},0);
+  var h='<div class="card"><div class="row mb"><h2>Dinheiro</h2><input type="month" id="mesSel" value="'+mesSel+'" style="width:auto"></div>';
+  h+='<div class="grid g3"><div class="stat"><div class="l">Entrou</div><div class="v pos">'+R(e)+'</div></div><div class="stat"><div class="l">Saiu</div><div class="v neg">'+R(s)+'</div></div><div class="stat"><div class="l">Saldo do mês</div><div class="v '+(e-s>=0?"pos":"neg")+'">'+R(e-s)+'</div></div></div>';
+  if(inv>0) h+='<div class="small mt">Desse saldo, '+R(inv)+' foi investimento (prensa, máquinas). Sem ele, o mês teria dado <b class="'+(e-s+inv>=0?"pos":"neg")+'">'+R(e-s+inv)+'</b>.</div>';
+  h+='</div>'+cardRetorno(false);
+  // novo lançamento
+  var cats = novoTipo==="e"?CAT_E:CAT_S;
+  h+='<div class="card"><h3>➕ Novo lançamento</h3><div class="seg"><button data-tipo="e" class="'+(novoTipo==="e"?"on":"")+'">Entrada</button><button data-tipo="s" class="'+(novoTipo==="s"?"on out":"")+'">Saída</button></div>';
+  h+='<form id="fLanc"><div class="grid g2"><label class="f"><span>Valor (R$)</span><input name="valor" inputmode="decimal" placeholder="0,00" required></label><label class="f"><span>Data</span><input type="date" name="data" value="'+hoje()+'" required></label></div>';
+  h+='<label class="f"><span>Categoria</span><select name="categoria">'+cats.map(function(c){return '<option>'+c+'</option>';}).join("")+'</select></label>';
+  h+='<label class="f"><span>Descrição (opcional)</span><input name="desc" placeholder="'+(novoTipo==="e"?"Ex.: 3 camisetas Shape Mode":"Ex.: Prensa térmica 38x38")+'"></label>';
+  if(novoTipo==="e") h+='<label class="chk"><input type="checkbox" name="nf"> Teve nota fiscal (NF-e)</label>';
+  h+='<button class="btn full" type="submit">Salvar '+(novoTipo==="e"?"entrada":"saída")+'</button></form></div>';
+  // gráfico 6 meses
+  var meses=[]; var base=new Date(+mesSel.slice(0,4), +mesSel.slice(5,7)-1, 1);
+  for(var i=5;i>=0;i--){ var dd=new Date(base.getFullYear(), base.getMonth()-i, 1); meses.push(dd.getFullYear()+"-"+String(dd.getMonth()+1).padStart(2,"0")); }
+  var vals=meses.map(function(m){var l=doMes(m);return [soma(l,"e"),soma(l,"s")];});
+  var mx=Math.max.apply(null, vals.map(function(v){return Math.max(v[0],v[1]);}).concat([1]));
+  h+='<div class="card"><h3>Últimos 6 meses</h3><div class="chart">'+meses.map(function(m,i){
+    return '<div class="m"><div class="bs"><i style="height:'+(vals[i][0]/mx*100)+'%" title="Entrou '+R(vals[i][0])+'"></i><i class="s" style="height:'+(vals[i][1]/mx*100)+'%" title="Saiu '+R(vals[i][1])+'"></i></div><small>'+nomeMes(m)+'</small></div>';
+  }).join("")+'</div><div class="leg"><span><i style="background:var(--lime)"></i>Entrou</span><span><i style="background:var(--red)"></i>Saiu</span></div></div>';
+  // por categoria
+  var porCat={}; lm.filter(function(l){return l.tipo==="s";}).forEach(function(l){porCat[l.categoria]=(porCat[l.categoria]||0)+num(l.valor);});
+  var ks=Object.keys(porCat).sort(function(a,b){return porCat[b]-porCat[a];});
+  if(ks.length){
+    h+='<div class="card"><h3>Pra onde foi o dinheiro</h3>'+ks.map(function(k){return '<div class="cat"><div class="row"><span>'+esc(k)+'</span><b>'+R(porCat[k])+'</b></div><div class="bar red"><i style="width:'+(porCat[k]/s*100)+'%"></i></div></div>';}).join("")+'</div>';
+  }
+  // lista
+  h+='<div class="card"><div class="row"><h3 style="margin:0">Lançamentos de '+nomeMes(mesSel)+'</h3>'+(S.lancamentos.length?'<button class="btn sm ghost" data-csv>Copiar planilha</button>':'')+'</div>';
+  if(!lm.length) h+='<div class="empty">Nada lançado neste mês ainda.<br>Comece registrando a primeira compra ou venda!</div>';
+  lm.forEach(function(l){
+    var dt=(l.data||"").split("-").reverse().slice(0,2).join("/");
+    h+='<div class="lanc"><div class="dot '+l.tipo+'">'+(l.tipo==="e"?"↓":"↑")+'</div><div class="i"><b>'+esc(l.desc||l.categoria)+'</b><small>'+dt+' · '+esc(l.categoria)+(l.auto?' · automático':'')+(l.tipo==="e"?(temNF(l)?' · com NF':' · sem NF'):'')+'</small></div><div class="val '+(l.tipo==="e"?"pos":"neg")+'">'+(l.tipo==="e"?"+":"−")+R(num(l.valor))+'</div><button class="btn danger" data-del="'+l.id+'" aria-label="Apagar">✕</button></div>';
+  });
+  h+='</div>';
+  h+='<div class="dica"><b>Dica:</b> em “Taxas de plataforma” entram as comissões da Shopee e da Shein. Se registrarem as vendas pela aba Produtos, a taxa já é lançada sozinha. 😉</div>';
+  return h;
+}
+
+function telaPrecos(){
+  var c=S.calc;
+  function inp(k,l,ph){return '<label class="f"><span>'+l+'</span><input inputmode="decimal" data-calc="'+k+'" value="'+esc(c[k])+'" placeholder="'+(ph||"0")+'"></label>';}
+  var h='<div class="card"><h2>Calculadora de preço</h2><div class="sub mb">Coloque quanto custa fazer UMA camiseta. A plataforma calcula o preço certo pra cada canal, já com as taxas.</div>';
+  h+='<div class="grid g2">'+inp("camiseta","Camiseta lisa (R$)")+inp("estampa","Estampa / DTF (R$)")+inp("embalagem","Embalagem + tag (R$)")+inp("outros","Outros por peça (R$)")+'</div>';
+  h+='<div class="small mb">“Outros” = energia, perdas, linha, aquela peça que estraga…</div>';
+  h+='<h3 class="mt">Custos fixos do mês</h3><div class="grid g2">'+inp("fixosMes","Fixos por mês (R$)")+inp("pecasMes","Peças vendidas/mês")+'</div>';
+  h+='<div class="small mb">Fixos = DAS + internet + Canva, etc. Isso é dividido entre as peças vendidas.</div>';
+  h+='<label class="f"><span>Margem de lucro desejada: <b id="mLbl" style="color:var(--lime)">'+num(c.margem)+'%</b></span><input type="range" min="5" max="60" step="1" data-calc="margem" value="'+num(c.margem)+'" style="padding:0;accent-color:#c8f53a"></label>';
+  h+='</div><div id="resPreco"></div>';
+  h+='<div class="card"><h3>🧪 Testar um preço</h3><div class="sub mb">Já tem um preço em mente? Veja quanto sobra em cada canal.</div>'+inp("teste","Preço de venda (R$)","69,90")+'<div id="resTeste"></div></div>';
+  // config taxas
+  var t=S.taxas;
+  h+='<div class="card"><details class="cfg"><summary>⚙️ Taxas das plataformas (editar)</summary>';
+  h+='<div class="small mb">Valores conferidos em nov/2026. As plataformas mudam as taxas com frequência — confirme sempre na Central do Vendedor e ajuste aqui.</div>';
+  h+='<h3>Shopee (CNPJ) — por faixa de preço</h3>';
+  t.shopeeFaixas.forEach(function(f,i){
+    var lbl = i<t.shopeeFaixas.length-1 ? "De "+R(f.min)+" até "+R(t.shopeeFaixas[i+1].min-0.01) : "A partir de "+R(f.min);
+    h+='<div class="small" style="margin-top:6px">'+lbl+'</div><div class="grid g2"><label class="f"><span>Comissão %</span><input inputmode="decimal" data-tx="sf'+i+'pct" value="'+f.pct+'"></label><label class="f"><span>Taxa fixa por item R$</span><input inputmode="decimal" data-tx="sf'+i+'fixa" value="'+f.fixa+'"></label></div>';
+  });
+  h+='<div class="small mb">A comissão da Shopee incide só no preço do produto (não no frete) e já inclui o programa de frete grátis.</div>';
+  h+='<h3 class="mt">Shein</h3><div class="grid g2"><label class="f"><span>Comissão %</span><input inputmode="decimal" data-tx="sheinPct" value="'+t.sheinPct+'"></label><label class="f"><span>Custo logístico por item R$</span><input inputmode="decimal" data-tx="sheinLog" value="'+t.sheinLog+'"></label></div>';
+  h+='<div class="small mb">Padrão 16%, mas algumas categorias pagam 18% a 20%. A Shein pode cobrar uma taxa de logística conforme o peso — veja no painel de vocês.</div>';
+  h+='<h3 class="mt">Venda direta (Instagram, academia)</h3><div class="grid g2"><label class="f"><span>Taxa maquininha/link %</span><input inputmode="decimal" data-tx="diretaPct" value="'+t.diretaPct+'"></label><label class="f"><span>Outro custo por venda R$</span><input inputmode="decimal" data-tx="diretaFixa" value="'+t.diretaFixa+'"></label></div>';
+  h+='<div class="small">No Pix normalmente é 0%. No cartão, coloquem a taxa da maquininha.</div>';
+  h+='</details></div>';
+  return h;
+}
+function resultadosPreco(){
+  var custo=custoPeca(), m=num(S.calc.margem);
+  var box=document.getElementById("resPreco"); if(!box) return;
+  var h='<div class="card"><div class="row"><span class="sub">Custo de cada camiseta</span><b class="disp" style="font-size:20px">'+R(custo)+'</b></div><div class="small">Já inclui '+R(num(S.calc.fixosMes)/Math.max(1,num(S.calc.pecasMes)))+' de custos fixos por peça.</div></div>';
+  h+='<div class="card"><h3>Preço sugerido pra '+m+'% de margem</h3>';
+  CANAIS.forEach(function(cn){
+    var p=precoIdeal(cn.id,custo,m), p90=arredonda90(p);
+    if(p==null){ h+='<div class="canal"><div class="hd"><b>'+cn.n+'</b></div><div class="small">Margem alta demais pra esse canal. Diminua a margem.</div></div>'; return; }
+    var tx=taxa(cn.id,p90), luc=p90-tx-custo, minimo=minimoSemPrejuizo(cn.id,custo);
+    h+='<div class="canal"><div class="hd"><b>'+cn.n+'</b><span class="badge '+cn.b+'">'+(cn.id==="direta"?"sem comissão":"taxa "+R(tx))+'</span></div>';
+    h+='<div class="preco">'+R(p90)+'</div><div class="small mb">preço “quebrado” sugerido (ideal exato: '+R(p)+')</div>';
+    h+='<div class="ln"><span>Taxa da plataforma</span><span>−'+R(tx)+'</span></div><div class="ln"><span>Custo da camiseta</span><span>−'+R(custo)+'</span></div><div class="ln"><span><b style="color:var(--txt)">Lucro por peça</b></span><span class="pos"><b>'+R(luc)+'</b> ('+Math.round(luc/p90*100)+'%)</span></div>';
+    h+='<div class="ln"><span>Mínimo pra não ter prejuízo</span><span>'+R(minimo)+'</span></div>';
+    if(cn.id==="shopee" && p90>=80 && p90<88) h+='<div class="dica warn mt" style="margin-bottom:0"><b>Pulo de faixa!</b> A partir de R$ 80 a taxa fixa da Shopee sobe bastante. Às vezes R$ 79,90 rende quase o mesmo — teste no “Testar um preço”.</div>';
+    h+='<button class="btn sm ghost mt" data-salvaprod="'+cn.id+'" data-preco="'+p90+'">👕 Salvar como produto</button>';
+    h+='</div>';
+  });
+  h+='</div>';
+  box.innerHTML=h;
+  // teste
+  var tb=document.getElementById("resTeste"); if(!tb) return;
+  var pt=num(S.calc.teste), th='';
+  if(pt>0){
+    CANAIS.forEach(function(cn){
+      var tx=taxa(cn.id,pt), l=pt-tx-custo, mg=l/pt*100;
+      th+='<div class="ln row" style="padding:8px 0;border-top:1px solid var(--line)"><span><b>'+cn.n+'</b><br><span class="small">taxa '+R(tx)+'</span></span><span style="text-align:right"><b class="'+(l>=0?"pos":"neg")+'">'+R(l)+'</b><br><span class="small">margem '+mg.toFixed(0)+'%</span></span></div>';
+    });
+  }
+  tb.innerHTML=th;
+}
+
+function telaProdutos(){
+  var h='<div class="card"><div class="row"><div><h2>Produtos</h2><div class="sub">Suas estampas e o estoque</div></div><button class="btn sm" data-novoprod>+ Novo</button></div></div>';
+  h+='<button class="btn full mb" data-venda '+(S.produtos.length?'':'disabled style="opacity:.5"')+'>💸 Registrar venda</button>';
+  h+='<div class="card">';
+  if(!S.produtos.length) h+='<div class="empty">Nenhum produto cadastrado ainda.<br>Toque em “+ Novo” ou salve um direto da calculadora de Preços.</div>';
+  S.produtos.forEach(function(p){
+    var est=num(p.estoque);
+    h+='<div class="prod"><div class="sw">👕</div><div class="i"><b>'+esc(p.nome)+'</b><small>'+esc(p.modelo||"")+' · custo '+R(num(p.custo))+'</small><div class="small">Shopee '+R(num(p.pShopee))+' · Shein '+R(num(p.pShein))+' · Direta '+R(num(p.pDireta))+'</div></div>';
+    h+='<div class="est '+(est<=3?"neg":"")+'">'+est+'<small>em estoque</small></div></div>';
+    h+='<div class="row" style="justify-content:flex-end;gap:6px;margin:-4px 0 6px"><button class="btn sm ghost" data-est="'+p.id+'" data-d="-1">−1</button><button class="btn sm ghost" data-est="'+p.id+'" data-d="1">+1</button><button class="btn sm ghost" data-editprod="'+p.id+'">Editar</button></div>';
+  });
+  h+='</div>';
+  h+='<div class="dica"><b>Estoque baixo</b> (3 ou menos) aparece em vermelho. No começo, prefiram repor pouco e sempre — estoque parado é dinheiro parado.</div>';
+  return h;
+}
+
+function formProduto(p){
+  p=p||{id:"",nome:"",modelo:"Algodão",custo:custoPeca().toFixed(2),pShopee:"",pShein:"",pDireta:"",estoque:0};
+  var mods=["Algodão","Dry fit","Oversized","Regata","Cropped","Outro"];
+  var h='<h2 class="mb">'+(p.id?"Editar":"Novo")+' produto</h2><form id="fProd"><input type="hidden" name="id" value="'+esc(p.id)+'">';
+  h+='<label class="f"><span>Nome da estampa</span><input name="nome" value="'+esc(p.nome)+'" placeholder="Ex.: No Pain No Gain" required></label>';
+  h+='<div class="grid g2"><label class="f"><span>Modelo</span><select name="modelo">'+mods.map(function(m){return '<option'+(m===p.modelo?" selected":"")+'>'+m+'</option>';}).join("")+'</select></label>';
+  h+='<label class="f"><span>Custo por peça R$</span><input name="custo" inputmode="decimal" value="'+esc(p.custo)+'"></label></div>';
+  h+='<div class="grid g3"><label class="f"><span>Preço Shopee</span><input name="pShopee" inputmode="decimal" value="'+esc(p.pShopee)+'"></label><label class="f"><span>Preço Shein</span><input name="pShein" inputmode="decimal" value="'+esc(p.pShein)+'"></label><label class="f"><span>Preço direta</span><input name="pDireta" inputmode="decimal" value="'+esc(p.pDireta)+'"></label></div>';
+  h+='<label class="f"><span>Quantidade em estoque</span><input name="estoque" inputmode="numeric" value="'+esc(p.estoque)+'"></label>';
+  h+='<div class="grid g2"><button type="button" class="btn ghost" data-fechar>Cancelar</button><button class="btn" type="submit">Salvar</button></div>';
+  if(p.id) h+='<button type="button" class="btn danger full mt" data-delprod="'+p.id+'">Apagar produto</button>';
+  h+='</form>';
+  return h;
+}
+function formVenda(){
+  var h='<h2 class="mb">Registrar venda</h2><form id="fVenda">';
+  h+='<label class="f"><span>Produto</span><select name="prod">'+S.produtos.map(function(p){return '<option value="'+p.id+'">'+esc(p.nome)+' ('+esc(p.modelo||"")+') — '+num(p.estoque)+' em estoque</option>';}).join("")+'</select></label>';
+  h+='<div class="grid g2"><label class="f"><span>Onde vendeu</span><select name="canal">'+CANAIS.map(function(c){return '<option value="'+c.id+'">'+c.n+'</option>';}).join("")+'</select></label>';
+  h+='<label class="f"><span>Quantidade</span><input name="qtd" inputmode="numeric" value="1"></label></div>';
+  h+='<div class="grid g2"><label class="f"><span>Preço de cada (R$)</span><input name="preco" inputmode="decimal"></label><label class="f"><span>Data</span><input type="date" name="data" value="'+hoje()+'"></label></div>';
+  h+='<label class="chk"><input type="checkbox" name="nf" checked> Teve nota fiscal (NF-e)</label>';
+  h+='<div id="vendaPrev" class="small mb"></div>';
+  h+='<div class="grid g2"><button type="button" class="btn ghost" data-fechar>Cancelar</button><button class="btn" type="submit">Registrar</button></div></form>';
+  return h;
+}
+function prevVenda(){
+  var f=document.getElementById("fVenda"); if(!f) return;
+  var pr=num(f.preco.value), q=Math.max(1,Math.round(num(f.qtd.value))), tx=taxa(f.canal.value,pr)*q;
+  var prod=S.produtos.find(function(p){return p.id===f.prod.value;});
+  var lucro=pr*q-tx-(prod?num(prod.custo)*q:0);
+  document.getElementById("vendaPrev").innerHTML='Vai lançar: entrada de <b class="pos">'+R(pr*q)+'</b>'+(tx>0?' e saída de taxa <b class="neg">'+R(tx)+'</b>':'')+'.<br>Lucro estimado: <b class="'+(lucro>=0?"pos":"neg")+'">'+R(lucro)+'</b>';
+}
+function precoCanal(p,canal){ return canal==="shopee"?p.pShopee:canal==="shein"?p.pShein:p.pDireta; }
+
+var modalHtml=null;
+function abrirModal(h){ modalHtml=h; renderModal(); }
+function fecharModal(){ modalHtml=null; renderModal(); }
+function renderModal(){
+  var m=document.getElementById("modal"); if(m) m.remove();
+  if(!modalHtml) return;
+  m=document.createElement("div"); m.id="modal"; m.className="modal"; m.innerHTML='<div class="sheet">'+modalHtml+'</div>';
+  document.body.appendChild(m);
+  m.addEventListener("click",function(ev){ if(ev.target===m) fecharModal(); });
+  var fv=document.getElementById("fVenda");
+  if(fv){
+    var setP=function(){ var p=S.produtos.find(function(x){return x.id===fv.prod.value;}); if(p) fv.preco.value=precoCanal(p,fv.canal.value)||""; fv.nf.checked = fv.canal.value!=="direta"; prevVenda(); };
+    fv.prod.addEventListener("change",setP); fv.canal.addEventListener("change",setP);
+    fv.qtd.addEventListener("input",prevVenda); fv.preco.addEventListener("input",prevVenda);
+    setP();
+  }
+}
+
+/* ---------- plano de negócio ---------- */
+var PERGUNTAS = [
+ {t:"O negócio em uma frase", k:"resumo", h:"Se alguém perguntar “o que vocês fazem?”, qual é a resposta curtinha?", ex:"Ex.: Camisetas com estampas próprias pra quem treina pesado e quer se vestir com atitude dentro e fora da academia."},
+ {t:"Por que a marca existe", k:"missao", h:"O que motivou vocês? Que sentimento a marca quer passar?", ex:"Ex.: Motivar quem treina. Cada estampa é um lembrete de disciplina e foco."},
+ {t:"Quem é o cliente ideal", k:"cliente", h:"Idade, o que treina, onde compra, quanto costuma pagar numa camiseta. Quanto mais detalhe, melhor.", ex:"Ex.: Homens e mulheres de 18 a 35 anos que treinam musculação 4x por semana, seguem perfis fitness no Instagram e compram pela Shopee."},
+ {t:"Os produtos", k:"produto", h:"Quais modelos e tecidos? Quantas estampas no lançamento? Quais tamanhos?", ex:"Ex.: Coleção 1 com 4 estampas, em camiseta dry fit e oversized de algodão, P ao GG. Depois, regatas."},
+ {t:"O diferencial", k:"diferencial", h:"Por que alguém compraria de vocês e não de outra loja? (Dica: “preço baixo” sozinho não é diferencial — é guerra.)", ex:"Ex.: Estampas exclusivas criadas por nós, frases que a galera da academia fala de verdade, e tecido testado em treino."},
+ {t:"Concorrentes", k:"concorrentes", h:"Pesquisem 3 a 5 lojas parecidas na Shopee e no Instagram. Anotem preço, o que fazem bem e o que os clientes reclamam nas avaliações.", ex:"Ex.: Loja X – R$ 59,90, muitas vendas, mas reclamam que a estampa racha. Loja Y – R$ 99, marca forte no Instagram."},
+ {t:"Onde vão vender", k:"canais", h:"Quais canais e qual o papel de cada um?", ex:"Ex.: Shopee pra volume, Shein depois de aprovados, Instagram e academias pra venda direta (sem comissão)."},
+ {t:"Como vão divulgar", k:"divulgacao", h:"Redes sociais, parcerias, anúncios… Quanto pretendem gastar por mês?", ex:"Ex.: 3 vídeos por semana no TikTok/Reels mostrando treino, 2 personais parceiros com cupom, R$ 100/mês em anúncios na Shopee."},
+ {t:"Fornecedores", k:"fornecedores", h:"De quem compram camiseta lisa, DTF/insumos e embalagem? Tenham sempre um plano B.", ex:"Ex.: Camiseta lisa – Fornecedor A (principal) e B (reserva). DTF – gráfica C, prazo de 3 dias."},
+ {t:"Como produzem", k:"operacao", h:"O passo a passo do pedido até o envio. Quanto tempo leva cada camiseta?", ex:"Ex.: Pedido entra → separa camiseta → prensa (2 min) → dobra e embala → etiqueta de envio → posta no dia seguinte."},
+ {t:"Quem faz o quê", k:"equipe", h:"Dividam as tarefas: criação, produção, atendimento, redes sociais, financeiro. Lembrem: o MEI fica no nome de uma pessoa só.", ex:"Ex.: Rafa – estampas e produção. Felipe – financeiro, plataformas e atendimento."},
+ {t:"Riscos e plano B", k:"riscos", h:"O que pode dar errado e o que vocês fariam?", ex:"Ex.: Se a Shopee aumentar a taxa → focar mais em venda direta. Se uma estampa encalhar → vender em kit com desconto."}
+];
+function nivelPlano(){ var t=S.plano.textos||{}; return PERGUNTAS.filter(function(q){return (t[q.k]||"").trim().length>=10;}).length; }
+function contasPlano(){
+  var P=S.plano, c=S.calc, preco=num(P.preco), pecas=Math.max(0,num(P.pecasMes));
+  var mixT = num(P.mix.shopee)+num(P.mix.shein)+num(P.mix.direta) || 1;
+  var taxaMedia = CANAIS.reduce(function(a,cn){ return a + taxa(cn.id,preco)*num(P.mix[cn.id])/mixT; },0);
+  var custoVar = num(c.camiseta)+num(c.estampa)+num(c.embalagem)+num(c.outros);
+  var fixos = num(c.fixosMes);
+  var lucroPeca = preco - taxaMedia - custoVar;
+  var fatMes = pecas*preco, lucroMes = pecas*lucroPeca - fixos;
+  var invItens = (P.inv||[]).reduce(function(a,i){return a+num(i.valor);},0), invTotal = invItens + num(P.reserva);
+  return {preco:preco,pecas:pecas,mixT:mixT,taxaMedia:taxaMedia,custoVar:custoVar,fixos:fixos,lucroPeca:lucroPeca,fatMes:fatMes,fatAno:fatMes*12,lucroMes:lucroMes,
+    equilibrio: lucroPeca>0 ? Math.ceil(fixos/lucroPeca) : null,
+    invItens:invItens, invTotal:invTotal, payback: lucroMes>0 ? Math.ceil(invTotal/lucroMes) : null,
+    maxPecasMei: preco>0 ? Math.floor(6750/preco) : 0};
+}
+function telaPlano(){
+  var P=S.plano, t=P.textos||{}, n=nivelPlano(), pct=Math.round(n/PERGUNTAS.length*100);
+  var h='<div class="card hero"><div class="tag">Plano de negócio 📋</div><h1>O mapa da marca</h1><div class="sub">Responder essas perguntas ajuda a tomar decisões, conversar com fornecedores e até pedir crédito no futuro. Não precisa ser perfeito — escrevam do jeito de vocês e vão melhorando com o tempo.</div>';
+  h+='<div class="row mt"><span class="small">Plano preenchido</span><b class="pos" id="planoN">'+n+'/'+PERGUNTAS.length+'</b></div><div class="bar"><i id="planoBar" style="width:'+pct+'%"></i></div></div>';
+  // parte 1: textos
+  h+='<div class="card"><h2>1. O negócio</h2><div class="sub mb">Toquem fora da caixa de texto pra salvar.</div>';
+  PERGUNTAS.forEach(function(q,i){
+    var v=t[q.k]||"", ok=v.trim().length>=10;
+    h+='<div class="pq"><div class="q"><span>'+(i+1)+'. '+q.t+'</span>'+(ok?'<span class="ok">✓</span>':'')+'</div><div class="h">'+q.h+'</div><textarea data-pt="'+q.k+'" placeholder="'+esc(q.ex)+'">'+esc(v)+'</textarea></div>';
+  });
+  h+='</div>';
+  // parte 2: números
+  function inp(attr,l,v,extra){return '<label class="f"><span>'+l+'</span><input inputmode="decimal" '+attr+' value="'+esc(v)+'"'+(extra||"")+'></label>';}
+  h+='<div class="card"><h2>2. Os números</h2><div class="sub mb">A meta de vendas e o que ela significa em dinheiro. O custo de cada peça vem da aba Preços.</div>';
+  h+='<div class="grid g2">'+inp('data-pn="pecasMes"','Meta de peças por mês',P.pecasMes)+inp('data-pn="preco"','Preço médio de venda (R$)',P.preco)+'</div>';
+  h+='<h3 class="mt">De onde vêm as vendas (%)</h3><div class="grid g3">'+inp('data-mix="shopee"','Shopee',P.mix.shopee)+inp('data-mix="shein"','Shein',P.mix.shein)+inp('data-mix="direta"','Direta',P.mix.direta)+'</div>';
+  h+='<div id="mixAviso" class="small"></div>';
+  h+='</div><div id="resPlano"></div>';
+  // parte 3: investimento
+  h+='<div class="card"><h2>3. Investimento pra começar</h2><div class="sub mb">Tudo que precisa comprar antes da primeira venda. Editem os itens e valores.</div>';
+  (P.inv||[]).forEach(function(it){
+    h+='<div class="inv"><input data-inv="'+it.id+'" data-campo="nome" value="'+esc(it.nome)+'" placeholder="Item"><input class="v" inputmode="decimal" data-inv="'+it.id+'" data-campo="valor" value="'+esc(it.valor)+'" placeholder="R$"><button class="btn danger" data-delinv="'+it.id+'" aria-label="Remover">✕</button></div>';
+  });
+  h+='<button class="btn sm ghost mb" data-addinv>+ Adicionar item</button>';
+  h+=inp('data-pn="reserva"','Reserva de capital de giro (R$)',P.reserva);
+  h+='<div class="small">É o “colchão” pra pagar custos enquanto as plataformas não repassam o dinheiro (a Shopee e a Shein levam alguns dias pra liberar). Uma boa reserva cobre pelo menos 1 mês de custos.</div>';
+  h+='<div id="resInv" class="mt"></div></div>';
+  h+='<div class="card"><h3>📤 Levar o plano pra fora</h3><div class="sub mb">Copia o plano inteiro em texto, pra colar num documento, mandar no WhatsApp ou levar numa conversa com o Sebrae ou um contador.</div><button class="btn full" data-copiaplano>Copiar plano completo</button></div>';
+  h+='<div class="dica"><b>Dica:</b> o Sebrae tem atendimento gratuito pra quem está abrindo MEI e pode revisar esse plano com vocês. Vale muito a pena! 💡</div>';
+  return h;
+}
+function resultadosPlano(){
+  var box=document.getElementById("resPlano"); if(!box) return;
+  var k=contasPlano(), P=S.plano;
+  var av=document.getElementById("mixAviso");
+  if(av) av.innerHTML = Math.round(k.mixT)!==100 ? '⚠️ A soma está em '+Math.round(k.mixT)+'%. O ideal é dar 100% (a conta ajusta sozinha, mas fica mais fácil de entender).' : '';
+  var h='<div class="card"><h3>O que essa meta significa</h3>';
+  h+='<div class="grid g2"><div class="stat"><div class="l">Faturamento por mês</div><div class="v">'+R(k.fatMes)+'</div></div><div class="stat"><div class="l">Lucro por mês</div><div class="v '+(k.lucroMes>=0?"pos":"neg")+'">'+R(k.lucroMes)+'</div></div></div>';
+  h+='<div class="canal mt"><div class="ln"><span>Preço médio</span><span>'+R(k.preco)+'</span></div><div class="ln"><span>Taxa média das plataformas</span><span>−'+R(k.taxaMedia)+'</span></div><div class="ln"><span>Custo da peça (camiseta, estampa, embalagem…)</span><span>−'+R(k.custoVar)+'</span></div><div class="ln"><span><b style="color:var(--txt)">Sobra por peça</b></span><span class="'+(k.lucroPeca>=0?"pos":"neg")+'"><b>'+R(k.lucroPeca)+'</b></span></div><div class="ln"><span>Custos fixos do mês</span><span>−'+R(k.fixos)+'</span></div></div>';
+  // ponto de equilíbrio
+  h+='<div class="stat mt"><div class="l">⚖️ Ponto de equilíbrio</div>';
+  if(k.equilibrio!=null){
+    var pe=Math.min(100,k.equilibrio/Math.max(1,k.pecas)*100);
+    h+='<div class="big">'+k.equilibrio+' peças/mês</div><div class="small">É o mínimo pra não ter prejuízo. Abaixo disso, os custos fixos não se pagam.</div>';
+    h+='<div class="bar '+(k.pecas<k.equilibrio?"red":"")+'"><i style="width:'+pe+'%"></i></div><div class="small">'+(k.pecas>=k.equilibrio?'✅ A meta de '+k.pecas+' peças passa do equilíbrio. Cada peça a mais é lucro!':'⚠️ A meta de '+k.pecas+' peças está abaixo do equilíbrio. Aumentem a meta, o preço, ou cortem custos.')+'</div>';
+  } else h+='<div class="small neg">Com esse preço, cada peça dá prejuízo. Aumentem o preço médio ou revisem os custos na aba Preços.</div>';
+  h+='</div>';
+  // limite MEI
+  var acima=k.fatAno>81000;
+  h+='<div class="dica '+(acima?"warn":"")+' mt" style="margin-bottom:0">'+(acima?'<b>Atenção ao limite do MEI:</b> essa meta dá '+R(k.fatAno)+' por ano, acima dos R$ 81 mil. Com esse preço, o máximo é uns <b>'+k.maxPecasMei+' peças/mês</b>. Se a meta for maior, conversem com um contador sobre virar Microempresa (ME).':'<b>Dentro do limite do MEI:</b> essa meta dá '+R(k.fatAno)+' por ano (o limite é R$ 81 mil). Com esse preço dá pra vender até uns '+k.maxPecasMei+' peças/mês.')+'</div>';
+  // real vs plano
+  var ms={}; S.lancamentos.forEach(function(l){ if(ehInvest(l)) return; var m=(l.data||"").slice(0,7); ms[m]=(ms[m]||0)+(l.tipo==="e"?num(l.valor):-num(l.valor)); });
+  var ult=Object.keys(ms).sort().slice(-3);
+  if(ult.length){ var media=ult.reduce(function(a,m){return a+ms[m];},0)/ult.length;
+    h+='<div class="stat mt"><div class="l">📊 Plano × realidade</div><div class="small" style="margin-top:4px">Nos últimos '+ult.length+' '+(ult.length>1?'meses':'mês')+' com lançamentos, o resultado médio foi <b class="'+(media>=0?"pos":"neg")+'">'+R(media)+'/mês</b>, contra '+R(k.lucroMes)+' do plano. '+(media>=k.lucroMes?'Acima do plano, que orgulho! 🔥':'Ainda abaixo, mas é normal no começo. Sigam firmes!')+'</div></div>';
+  }
+  h+='</div>';
+  box.innerHTML=h;
+  var ri=document.getElementById("resInv");
+  if(ri){
+    var r='<div class="grid g2"><div class="stat"><div class="l">Investimento total</div><div class="v">'+R(k.invTotal)+'</div></div><div class="stat"><div class="l">Se paga em</div><div class="v '+(k.payback?"pos":"neg")+'">'+(k.payback? k.payback+' '+(k.payback>1?'meses':'mês') : '—')+'</div></div></div>';
+    r+='<div class="small mt">'+(k.payback?'Batendo a meta de '+k.pecas+' peças/mês, o lucro de '+R(k.lucroMes)+' paga todo o investimento (itens + reserva) nesse tempo.':'Com a meta atual o mês não dá lucro, então o investimento não se paga. Ajustem a meta ou o preço.')+'</div>';
+    ri.innerHTML=r;
+  }
+}
+function textoPlano(){
+  var P=S.plano, t=P.textos||{}, k=contasPlano(), L=[];
+  L.push("PLANO DE NEGÓCIO — "+S.marca.toUpperCase()); L.push("Camisetas personalizadas fitness · MEI"); L.push("");
+  PERGUNTAS.forEach(function(q,i){ L.push((i+1)+". "+q.t.toUpperCase()); L.push((t[q.k]||"").trim()||"(a preencher)"); L.push(""); });
+  L.push("NÚMEROS");
+  L.push("Meta: "+k.pecas+" peças/mês a "+R(k.preco)+" (preço médio)");
+  L.push("Canais: Shopee "+num(P.mix.shopee)+"% · Shein "+num(P.mix.shein)+"% · Direta "+num(P.mix.direta)+"%");
+  L.push("Custo por peça: "+R(k.custoVar)+" · Taxa média: "+R(k.taxaMedia)+" · Sobra por peça: "+R(k.lucroPeca));
+  L.push("Custos fixos: "+R(k.fixos)+"/mês");
+  L.push("Faturamento previsto: "+R(k.fatMes)+"/mês ("+R(k.fatAno)+"/ano)");
+  L.push("Lucro previsto: "+R(k.lucroMes)+"/mês");
+  L.push("Ponto de equilíbrio: "+(k.equilibrio!=null?k.equilibrio+" peças/mês":"—"));
+  L.push("");
+  L.push("INVESTIMENTO INICIAL");
+  (P.inv||[]).forEach(function(i){ L.push("- "+i.nome+": "+R(num(i.valor))); });
+  L.push("- Reserva de capital de giro: "+R(num(P.reserva)));
+  L.push("Total: "+R(k.invTotal)+" · Retorno previsto em "+(k.payback?k.payback+" meses":"—"));
+  return L.join("\n");
+}
+
+/* ---------- relatório ---------- */
+function temNF(l){ return l.nf!==undefined ? !!l.nf : l.categoria!=="Venda direta / Instagram"; }
+var GRUPOS = [
+ {n:"Custo dos produtos", cats:["Camisetas lisas","Estampa / insumos (DTF, tinta)","Embalagem e etiquetas"]},
+ {n:"Taxas das plataformas", cats:["Taxas de plataforma"]},
+ {n:"Frete / envio", cats:["Frete / envio"]},
+ {n:"Despesas do mês", cats:["DAS (imposto do MEI)","Anúncios / marketing","Outras saídas"]}
+];
+var CAT_RET="Retirada dos sócios (pró-labore)";
+function resumoMes(am){
+  var l=doMes(am), r={vendas:0, outrasE:0, grupos:{}, inv:0, ret:0, nfCom:0, nfSem:0, canais:{}, prods:{}, pecas:0};
+  GRUPOS.forEach(function(g){r.grupos[g.n]=0;});
+  l.forEach(function(x){
+    var v=num(x.valor);
+    if(x.tipo==="e"){
+      if(x.categoria==="Outras entradas"){ r.outrasE+=v; return; }
+      r.vendas+=v; if(temNF(x)) r.nfCom+=v; else r.nfSem+=v;
+      r.canais[x.categoria]=(r.canais[x.categoria]||0)+v;
+      var q=x.qtd, nome=null;
+      var m=(x.desc||"").match(/^(\d+)\s*[×x]\s*(.+)$/);
+      if(m){ q=q||+m[1]; nome=m[2].trim(); }
+      if(x.prod){ var pp=S.produtos.find(function(p){return p.id===x.prod;}); if(pp) nome=pp.nome; }
+      if(q){ r.pecas+=q; if(nome){ if(!r.prods[nome]) r.prods[nome]={q:0,v:0}; r.prods[nome].q+=q; r.prods[nome].v+=v; } }
+      return;
+    }
+    if(ehInvest(x)){ r.inv+=v; return; }
+    if(x.categoria===CAT_RET){ r.ret+=v; return; }
+    var g=GRUPOS.find(function(g){return g.cats.indexOf(x.categoria)>-1;}) || GRUPOS[3];
+    r.grupos[g.n]+=v;
+  });
+  r.custos=GRUPOS.reduce(function(a,g){return a+r.grupos[g.n];},0);
+  r.lucro=r.vendas+r.outrasE-r.custos;
+  r.margem=r.vendas>0? r.lucro/r.vendas*100 : 0;
+  r.n=l.length;
+  return r;
+}
+function mesAnterior(am){ var d=new Date(+am.slice(0,4), +am.slice(5,7)-2, 1); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+function varTag(a,b,inverso){ if(!b) return ''; var p=(a-b)/Math.abs(b)*100; if(!isFinite(p)||Math.abs(p)<0.5) return ''; var bom=inverso? p<0 : p>0; return '<span class="var '+(bom?"up":"dn")+'">'+(p>0?"▲":"▼")+Math.abs(p).toFixed(0)+'%</span>'; }
+var NOMES_MES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+function mesExtenso(am){ return NOMES_MES[+am.slice(5,7)-1]+" de "+am.slice(0,4); }
+function telaRelatorio(){
+  var am=mesSel, r=resumoMes(am), ant=resumoMes(mesAnterior(am));
+  var h='<div class="card"><div class="row mb"><h2>Relatório</h2><input type="month" id="mesSel" value="'+am+'" style="width:auto"></div>';
+  h+='<div class="sub">'+mesExtenso(am)+' · '+r.n+' lançamento'+(r.n!==1?'s':'')+'</div>';
+  h+='<button class="btn full mt" data-copiarel>📤 Copiar relatório do mês</button></div>';
+  if(!r.n){ h+='<div class="card"><div class="empty">Nenhum lançamento neste mês ainda.<br>Os relatórios aparecem assim que tiver entradas e saídas na aba Dinheiro.</div></div>'; }
+  // 1. resultado
+  h+='<div class="card"><h3>💡 Resultado do mês</h3><div class="sub mb">Como o dinheiro das vendas virou (ou não) lucro.</div><table class="tbl">';
+  h+='<tr><td><b>Vendas</b>'+varTag(r.vendas,ant.vendas)+'</td><td class="pos"><b>'+R(r.vendas)+'</b></td></tr>';
+  if(r.outrasE) h+='<tr><td>Outras entradas</td><td class="pos">'+R(r.outrasE)+'</td></tr>';
+  GRUPOS.forEach(function(g){ h+='<tr><td>(−) '+g.n+'</td><td class="neg">'+R(r.grupos[g.n])+'</td></tr>'; });
+  h+='<tr class="tot"><td>= Lucro do mês'+varTag(r.lucro,ant.lucro)+'</td><td class="'+(r.lucro>=0?"pos":"neg")+'">'+R(r.lucro)+'</td></tr>';
+  h+='</table>';
+  h+='<div class="grid g2 mt"><div class="stat"><div class="l">Margem de lucro</div><div class="v '+(r.margem>=0?"pos":"neg")+'">'+r.margem.toFixed(0)+'%</div></div><div class="stat"><div class="l">Peças vendidas</div><div class="v">'+(r.pecas||"—")+'</div></div></div>';
+  if(r.pecas) h+='<div class="small mt">Ticket médio por peça: <b style="color:var(--txt)">'+R(r.vendas/r.pecas)+'</b> · lucro por peça: <b class="'+(r.lucro>=0?"pos":"neg")+'">'+R(r.lucro/r.pecas)+'</b></div>';
+  if(r.inv||r.ret){ h+='<div class="dica mt" style="margin-bottom:0">';
+    if(r.inv) h+='🏗️ Investimentos no mês (fora da conta do lucro): <b>'+R(r.inv)+'</b><br>';
+    if(r.ret) h+='👛 Retirada dos sócios: <b>'+R(r.ret)+'</b>'+(r.ret>r.lucro?' — <span style="color:var(--amber)">maior que o lucro do mês, cuidado pra não descapitalizar a empresa!</span>':' — dentro do lucro, mandaram bem!');
+    h+='</div>'; }
+  h+='</div>';
+  // 2. canais
+  var cks=Object.keys(r.canais).sort(function(a,b){return r.canais[b]-r.canais[a];});
+  if(cks.length){
+    h+='<div class="card"><h3>🛒 Vendas por canal</h3>'+cks.map(function(k){var cn=CANAIS.find(function(c){return c.cat===k;});return '<div class="cat"><div class="row"><span>'+esc(cn?cn.n:k)+'</span><b>'+R(r.canais[k])+' <span class="small">('+(r.canais[k]/r.vendas*100).toFixed(0)+'%)</span></b></div><div class="bar"><i style="width:'+(r.canais[k]/r.vendas*100)+'%"></i></div></div>';}).join("")+'</div>';
+  }
+  // 3. produtos
+  var pks=Object.keys(r.prods).sort(function(a,b){return r.prods[b].q-r.prods[a].q;});
+  if(pks.length){
+    h+='<div class="card"><h3>🏆 Estampas campeãs</h3><table class="tbl"><tr><th>Estampa</th><th>Peças</th><th>Vendas</th></tr>'+pks.slice(0,8).map(function(k,i){return '<tr><td>'+(i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":"")+esc(k)+'</td><td>'+r.prods[k].q+'</td><td>'+R(r.prods[k].v)+'</td></tr>';}).join("")+'</table>';
+    h+='<div class="small mt">Conta as vendas registradas pelo botão “Registrar venda” da aba Produtos.</div></div>';
+  }
+  // 4. relatório mensal oficial
+  var lin=S.tipoReceita==="industria"?"II":"I";
+  h+='<div class="card"><h3>🧾 Relatório Mensal de Receitas Brutas</h3><div class="sub mb">Todo MEI precisa preencher este relatório todo mês e guardar junto com as notas fiscais de compra e venda. Não precisa enviar pra ninguém, mas pode ser pedido numa fiscalização.</div>';
+  h+='<label class="f"><span>Como as vendas de camiseta entram no relatório</span><select id="tipoReceita"><option value="revenda"'+(lin==="I"?" selected":"")+'>I – Revenda de mercadorias (comércio)</option><option value="industria"'+(lin==="II"?" selected":"")+'>II – Venda de produtos industrializados (indústria)</option></select></label>';
+  h+='<table class="tbl"><tr><th>'+(lin==="I"?"I – Revenda de mercadorias":"II – Produtos industrializados")+'</th><th>Valor</th></tr>';
+  h+='<tr class="sub"><td>Com dispensa de nota fiscal (sem NF)</td><td>'+R(r.nfSem)+'</td></tr>';
+  h+='<tr class="sub"><td>Com documento fiscal emitido (com NF)</td><td>'+R(r.nfCom)+'</td></tr>';
+  h+='<tr class="tot"><td>Total da linha '+lin+'</td><td>'+R(r.vendas)+'</td></tr>';
+  h+='<tr class="sub"><td>'+(lin==="I"?"II – Produtos industrializados":"I – Revenda de mercadorias")+'</td><td>'+R(0)+'</td></tr>';
+  h+='<tr class="sub"><td>III – Prestação de serviços</td><td>'+R(0)+'</td></tr>';
+  h+='<tr class="tot"><td>Total geral do mês</td><td>'+R(r.vendas)+'</td></tr></table>';
+  h+='<div class="small mt">Só entram vendas (não entram “Outras entradas”). Como vocês compram a camiseta e estampam, confirmem com um contador ou com o Sebrae qual linha é a certa (I ou II). O modelo oficial do relatório está no Portal do Empreendedor.</div></div>';
+  // 5. ano
+  var ano=am.slice(0,4), meses=[], totV=0, totL=0;
+  for(var i=1;i<=12;i++){ var m=ano+"-"+String(i).padStart(2,"0"), rr=resumoMes(m); if(rr.n){ meses.push([m,rr]); totV+=rr.vendas; totL+=rr.lucro; } }
+  h+='<div class="card"><h3>📅 Resumo de '+ano+'</h3>';
+  if(meses.length){
+    h+='<table class="tbl"><tr><th>Mês</th><th>Vendas</th><th>Lucro</th></tr>'+meses.map(function(x){return '<tr><td>'+NOMES_MES[+x[0].slice(5,7)-1]+'</td><td>'+R(x[1].vendas)+'</td><td class="'+(x[1].lucro>=0?"pos":"neg")+'">'+R(x[1].lucro)+'</td></tr>';}).join("")+'<tr class="tot"><td>Total</td><td>'+R(totV)+'</td><td class="'+(totL>=0?"pos":"neg")+'">'+R(totL)+'</td></tr></table>';
+    var melhor=meses.slice().sort(function(a,b){return b[1].vendas-a[1].vendas;})[0];
+    h+='<div class="small mt">🔥 Melhor mês em vendas: <b style="color:var(--txt)">'+NOMES_MES[+melhor[0].slice(5,7)-1]+'</b> ('+R(melhor[1].vendas)+').</div>';
+  } else h+='<div class="empty">Sem lançamentos em '+ano+'.</div>';
+  h+='<div class="dica mt" style="margin-bottom:0"><b>Declaração anual (DASN-SIMEI):</b> o total de vendas de '+ano+' é o número que vocês informam na declaração, entregue até <b>31 de maio de '+(+ano+1)+'</b> no Portal do Empreendedor.</div></div>';
+  return h;
+}
+function textoRelatorio(){
+  var am=mesSel, r=resumoMes(am), L=[];
+  L.push("RELATÓRIO — "+S.marca.toUpperCase()+" — "+mesExtenso(am).toUpperCase()); L.push("");
+  L.push("RESULTADO DO MÊS");
+  L.push("Vendas: "+R(r.vendas)); if(r.outrasE) L.push("Outras entradas: "+R(r.outrasE));
+  GRUPOS.forEach(function(g){ L.push("(−) "+g.n+": "+R(r.grupos[g.n])); });
+  L.push("= Lucro do mês: "+R(r.lucro)+" (margem "+r.margem.toFixed(0)+"%)");
+  if(r.pecas) L.push("Peças vendidas: "+r.pecas);
+  if(r.inv) L.push("Investimentos no mês: "+R(r.inv));
+  if(r.ret) L.push("Retirada dos sócios: "+R(r.ret));
+  var cks=Object.keys(r.canais);
+  if(cks.length){ L.push(""); L.push("VENDAS POR CANAL"); cks.forEach(function(k){ L.push("- "+k.replace("Venda ","")+": "+R(r.canais[k])); }); }
+  var pks=Object.keys(r.prods).sort(function(a,b){return r.prods[b].q-r.prods[a].q;});
+  if(pks.length){ L.push(""); L.push("ESTAMPAS MAIS VENDIDAS"); pks.slice(0,5).forEach(function(k,i){ L.push((i+1)+". "+k+" — "+r.prods[k].q+" peças"); }); }
+  L.push(""); L.push("RELATÓRIO MENSAL DE RECEITAS BRUTAS");
+  L.push((S.tipoReceita==="industria"?"II – Venda de produtos industrializados":"I – Revenda de mercadorias"));
+  L.push("  Sem nota fiscal: "+R(r.nfSem)); L.push("  Com nota fiscal: "+R(r.nfCom)); L.push("  Total: "+R(r.vendas));
+  return L.join("\n");
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!logado) return;
+  var app=document.getElementById("app");
+  var corpo = aba==="relatorio"?telaRelatorio():aba==="plano"?telaPlano():aba==="etapas"?telaEtapas():aba==="dinheiro"?telaDinheiro():aba==="precos"?telaPrecos():aba==="produtos"?telaProdutos():telaInicio();
+  app.innerHTML = '<header class="top"><div class="brand">'+(LOGOS[S.logo]?'<img src="'+LOGOS[S.logo]+'" alt="'+esc(S.marca)+'">':'<div class="logo">'+esc((S.marca||"M").trim().charAt(0).toUpperCase())+'</div><div><b>'+esc(S.marca)+'</b><small>Painel do MEI</small></div>')+'</div><span id="chipSalvo" class="chip"></span></header>'+
+    '<main class="wrap">'+corpo+'</main>'+
+    '<nav class="tabs"><div class="in">'+ABAS.map(function(a){return '<button data-ir="'+a[0]+'" class="'+(aba===a[0]?"on":"")+'"><span class="ic">'+a[1]+'</span>'+a[2]+'</button>';}).join("")+'</div></nav>';
+  atualizaChip();
+  if(aba==="precos") resultadosPreco();
+  if(aba==="plano") resultadosPlano();
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-sair],[data-logo],[data-copiarel],[data-addinv],[data-delinv],[data-copiaplano],[data-ir],[data-ck],[data-fase],[data-tipo],[data-del],[data-das],[data-csv],[data-salvaprod],[data-novoprod],[data-editprod],[data-delprod],[data-est],[data-venda],[data-fechar]");
+  if(!t) return;
+  var d=t.dataset;
+  if(d.sair!==undefined){ sair(""); return; }
+  if(d.logo){ S.logo=d.logo; salvar(); render(); var c=document.querySelector("details.cfg"); if(c) c.open=true; toast("Logo trocado! ✨"); return; }
+  if(d.copiarel!==undefined){ try{ navigator.clipboard.writeText(textoRelatorio()).then(function(){toast("Relatório copiado! 📊");},function(){toast("Não consegui copiar 😕");}); }catch(e){ toast("Não consegui copiar 😕"); } return; }
+  if(d.addinv!==undefined){ S.plano.inv.push({id:uid(),nome:"",valor:0}); salvar(); render(); var ins=document.querySelectorAll('[data-campo="nome"]'); if(ins.length) ins[ins.length-1].focus(); return; }
+  if(d.delinv){ S.plano.inv=S.plano.inv.filter(function(i){return i.id!==d.delinv;}); salvar(); render(); return; }
+  if(d.copiaplano!==undefined){ try{ navigator.clipboard.writeText(textoPlano()).then(function(){toast("Plano copiado! 📋");},function(){toast("Não consegui copiar 😕");}); }catch(e){ toast("Não consegui copiar 😕"); } return; }
+  if(d.ir){ irPara(d.ir); return; }
+  if(d.ck){ S.etapas[d.ck]=!S.etapas[d.ck]; if(S.etapas[d.ck]) toast(["Mandou bem! 💪","Mais um! 🔥","Isso aí! 🚀","Show! ✅"][Math.floor(Math.random()*4)]); salvar(); render(); return; }
+  if(d.fase!==undefined){ var fi=+d.fase; var aberta=document.querySelector('[data-fase="'+fi+'"]').parentNode.querySelector(".passo"); faseAberta = aberta? -1 : fi; render(); return; }
+  if(d.tipo){ novoTipo=d.tipo; render(); return; }
+  if(d.del){ S.lancamentos=S.lancamentos.filter(function(l){return l.id!==d.del;}); salvar(); render(); toast("Lançamento apagado"); return; }
+  if(d.das!==undefined){ S.lancamentos.push({id:uid(),tipo:"s",data:hoje(),categoria:"DAS (imposto do MEI)",desc:"DAS "+nomeMes(mesAtual()),valor:num(S.dasValor)}); S.etapas.r_das=true; salvar(); render(); toast("DAS lançado ✅"); return; }
+  if(d.csv!==undefined){
+    var linhas=[["Data","Tipo","Categoria","Descrição","Valor"]].concat(S.lancamentos.slice().sort(function(a,b){return (a.data||"").localeCompare(b.data||"");}).map(function(l){return [l.data,l.tipo==="e"?"Entrada":"Saída",l.categoria,(l.desc||"").replace(/\t/g," "),num(l.valor).toFixed(2).replace(".",",")];}));
+    var txt=linhas.map(function(r){return r.join("\t");}).join("\n");
+    try{ navigator.clipboard.writeText(txt).then(function(){toast("Copiado! Cole no Excel ou Google Planilhas");},function(){toast("Não consegui copiar 😕");}); }catch(e){ toast("Não consegui copiar 😕"); }
+    return;
+  }
+  if(d.salvaprod){ var p={id:"",nome:"",modelo:"Algodão",custo:custoPeca().toFixed(2),pShopee:arredonda90(precoIdeal("shopee",custoPeca(),num(S.calc.margem)))||"",pShein:arredonda90(precoIdeal("shein",custoPeca(),num(S.calc.margem)))||"",pDireta:arredonda90(precoIdeal("direta",custoPeca(),num(S.calc.margem)))||"",estoque:0};
+    ["pShopee","pShein","pDireta"].forEach(function(k){ if(p[k]) p[k]=(+p[k]).toFixed(2); });
+    abrirModal(formProduto(p)); return; }
+  if(d.novoprod!==undefined){ abrirModal(formProduto()); return; }
+  if(d.editprod){ abrirModal(formProduto(S.produtos.find(function(p){return p.id===d.editprod;}))); return; }
+  if(d.delprod){ S.produtos=S.produtos.filter(function(p){return p.id!==d.delprod;}); salvar(); fecharModal(); render(); toast("Produto apagado"); return; }
+  if(d.est){ var pr=S.produtos.find(function(p){return p.id===d.est;}); if(pr){ pr.estoque=Math.max(0,num(pr.estoque)+(+d.d)); salvar(); render(); } return; }
+  if(d.venda!==undefined){ if(S.produtos.length) abrirModal(formVenda()); return; }
+  if(d.fechar!==undefined){ fecharModal(); return; }
+});
+document.addEventListener("submit",function(ev){
+  var f=ev.target; ev.preventDefault(); var fid=f.getAttribute("id");
+  if(fid==="fLogin"){ var sv=f.senha.value.trim(); if(sv){ f.querySelector("button").textContent="Entrando…"; entrar(sv,false); } return; }
+  if(fid==="fSenha"){
+    var nova=f.nova.value.trim(); if(nova.length<10){ toast("Use pelo menos 10 caracteres"); return; }
+    rpc("vayro_trocar_senha",{p_senha:senha,p_nova:nova}).then(function(r){ if(r.ok){ senha=nova; try{localStorage.setItem(SENHA_KEY,nova);}catch(e){} f.reset(); toast("Senha trocada! Avise o outro sócio 🔐"); } else toast(r.erro==="curta"?"Senha muito curta":"Não consegui trocar a senha"); }).catch(function(){ toast("Sem internet agora 😕"); });
+    return;
+  }
+  if(fid==="fLanc"){
+    var v=num(f.valor.value); if(v<=0){ toast("Coloque um valor maior que zero"); return; }
+    var nl={id:uid(),tipo:novoTipo,data:f.data.value||hoje(),categoria:f.categoria.value,desc:f.desc.value.trim(),valor:v};
+    if(novoTipo==="e") nl.nf=!!(f.nf&&f.nf.checked);
+    S.lancamentos.push(nl);
+    if(f.categoria.value==="DAS (imposto do MEI)") S.etapas.r_das=true;
+    mesSel=(f.data.value||hoje()).slice(0,7);
+    salvar(); render(); toast(novoTipo==="e"?"Entrada salva! 💰":"Saída salva!");
+  }
+  if(fid==="fProd"){
+    var o={id:f.elements["id"].value||uid(),nome:f.nome.value.trim()||"Sem nome",modelo:f.modelo.value,custo:num(f.custo.value),pShopee:num(f.pShopee.value),pShein:num(f.pShein.value),pDireta:num(f.pDireta.value),estoque:Math.max(0,Math.round(num(f.estoque.value)))};
+    var i=S.produtos.findIndex(function(p){return p.id===o.id;});
+    if(i>=0) S.produtos[i]=o; else S.produtos.push(o);
+    salvar(); fecharModal(); aba="produtos"; try{location.hash="produtos";}catch(e){} render(); toast("Produto salvo! 👕");
+  }
+  if(fid==="fVenda"){
+    var prod=S.produtos.find(function(p){return p.id===f.prod.value;}); if(!prod) return;
+    var q=Math.max(1,Math.round(num(f.qtd.value))), pr=num(f.preco.value), cn=CANAIS.find(function(c){return c.id===f.canal.value;}), dt=f.data.value||hoje();
+    if(pr<=0){ toast("Coloque o preço da venda"); return; }
+    S.lancamentos.push({id:uid(),tipo:"e",data:dt,categoria:cn.cat,desc:q+"× "+prod.nome,valor:+(pr*q).toFixed(2),qtd:q,prod:prod.id,nf:!!f.nf.checked});
+    var tx=taxa(cn.id,pr)*q;
+    if(tx>0) S.lancamentos.push({id:uid(),tipo:"s",data:dt,categoria:"Taxas de plataforma",desc:"Taxa "+cn.n+" · "+q+"× "+prod.nome,valor:+tx.toFixed(2),auto:true});
+    prod.estoque=Math.max(0,num(prod.estoque)-q);
+    if(!S.etapas.primeira){ S.etapas.primeira=true; }
+    salvar(); fecharModal(); render(); toast("Venda registrada! 🎉");
+  }
+});
+var calcTimer=null;
+document.addEventListener("input",function(ev){
+  var t=ev.target, d=t.dataset;
+  if(d.calc){ S.calc[d.calc]=t.value; if(d.calc==="margem"){var ml=document.getElementById("mLbl"); if(ml) ml.textContent=t.value+"%";} resultadosPreco();
+    guardarCache();
+    clearTimeout(calcTimer); calcTimer=setTimeout(salvar, 4000); }
+  if(d.pn){ S.plano[d.pn]=num(t.value); resultadosPlano(); }
+  if(d.mix){ S.plano.mix[d.mix]=num(t.value); resultadosPlano(); }
+  if(d.inv){ var it=S.plano.inv.find(function(i){return i.id===d.inv;}); if(it){ it[d.campo] = d.campo==="valor"?num(t.value):t.value; resultadosPlano(); } }
+  if(d.tx){
+    var m=d.tx.match(/^sf(\d)(pct|fixa)$/);
+    if(m) S.taxas.shopeeFaixas[+m[1]][m[2]]=num(t.value); else S.taxas[d.tx]=num(t.value);
+    resultadosPreco(); clearTimeout(calcTimer); calcTimer=setTimeout(salvar, 3000);
+  }
+});
+document.addEventListener("change",function(ev){
+  var t=ev.target, d=t.dataset;
+  if(t.id==="tipoReceita"){ S.tipoReceita=t.value; salvar(); render(); }
+  if(t.id==="mesSel"){ mesSel=t.value||mesAtual(); render(); }
+  if(d.pt){ S.plano.textos[d.pt]=t.value; salvar(); var q=t.closest(".pq"); if(q){ var okEl=q.querySelector(".ok"); var ok=t.value.trim().length>=10; if(ok&&!okEl){ q.querySelector(".q").insertAdjacentHTML("beforeend",'<span class="ok">✓</span>'); } if(!ok&&okEl) okEl.remove(); } var pn=nivelPlano(), en=document.getElementById("planoN"), eb=document.getElementById("planoBar"); if(en) en.textContent=pn+"/"+PERGUNTAS.length; if(eb) eb.style.width=Math.round(pn/PERGUNTAS.length*100)+"%"; }
+  if(d.pn||d.mix||d.inv) salvar();
+  if(d.cfg){ S[d.cfg] = d.cfg==="dasValor" ? num(t.value) : t.value; salvar(); render(); }
+});
+
+if(senha){ if(versao!==null){ logado=true; render(); } else telaLogin("",true); entrar(senha, true); }
+else telaLogin("");
+})();
+</script>
+</body>
+</html>
