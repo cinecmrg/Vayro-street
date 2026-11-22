@@ -1052,6 +1052,14 @@ function recalcCompra(){
     if(S.abertura){ var ma=+S.abertura.slice(5,7), mesesAb=12-ma+1; e+='<div class="ln"><span>No 1º ano (abrindo em '+nomeMes(S.abertura)+', '+mesesAb+' meses)</span><span>'+R(limMes*mesesAb)+' · '+(maxMes*mesesAb).toLocaleString("pt-BR")+' peças</span></div>'; }
     e+='<div class="ln"><span>Esse pedido vendido todo usa</span><span>'+pctLim.toFixed(1).replace(".",",")+'% do limite anual</span></div>';
     e+='<div class="small" style="margin-top:6px">* Vendendo a '+R(k.vendaMedia)+' em média. O limite conta o <b style="color:var(--txt)">faturamento</b> (tudo que vendeu), não o lucro. No ano em que o MEI abre, o limite é proporcional aos meses abertos'+(S.abertura?'':' — coloquem o mês de abertura em Início → Dados da empresa')+'.</div></div>';
+    var lsf = k.lucroPeca + k.fixPeca, fixMes = num(S.calc.fixosMes), metaM = pecasRef();
+    var linhas=[]; [20,40,metaM,maxMes].forEach(function(q){ q=Math.round(q); if(q>0 && linhas.indexOf(q)<0) linhas.push(q); }); linhas.sort(function(a,b){return a-b;});
+    e+='<div class="canal mt"><div class="row" style="margin-bottom:6px"><b>📅 Lucro por mês</b></div><table class="tbl"><tr><th>Vendendo</th><th>Faturamento</th><th>Lucro do mês</th></tr>';
+    linhas.forEach(function(q){ var lm=q*lsf-fixMes, tag=(q===maxMes?' 🔝':(q===Math.round(metaM)?' 🎯':'')); e+='<tr><td>'+q+' peças'+tag+'</td><td>'+R(q*k.vendaMedia)+'</td><td class="'+(lm>=0?"pos":"neg")+'"><b>'+R(lm)+'</b></td></tr>'; });
+    e+='</table><div class="small" style="margin-top:6px">🎯 meta de peças por mês · 🔝 máximo dentro do limite do MEI. Conta: peças × '+R(lsf)+' (o que sobra de cada camiseta depois da taxa e dos custos dela) − '+R(fixMes)+' de custos fixos do mês (DAS etc.). Usa o preço médio e o custo deste cenário.</div>';
+    var pe = lsf>0 ? Math.ceil(fixMes/lsf) : null;
+    if(pe) e+='<div class="small" style="margin-top:4px">⚖️ Pra pagar só os custos fixos do mês, precisam vender <b style="color:var(--txt)">'+pe+' peças</b>. Daí pra frente é lucro.</div>';
+    e+='</div>';
     var fn=num(c.freteGratis);
     if(k.desc>0) e+='<div class="dica mt" style="margin-bottom:0">💸 Os descontos economizaram <b>'+R(k.desc)+'</b> nesse pedido ('+R(k.desc/k.pecas)+' por peça).</div>';
     if(fn>0 && !k.freteGratis) e+='<div class="dica warn mt" style="margin-bottom:0">Faltam <b>'+R(fn-k.liq)+'</b> em camisetas pra ganhar o frete grátis (economia de '+R(num(c.frete))+').</div>';
