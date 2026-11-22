@@ -34,8 +34,9 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:10p
 .chip{font-size:12px;padding:5px 10px;border-radius:99px;background:var(--card2);color:var(--mut);white-space:nowrap}
 .chip.ok{color:var(--lime)} .chip.warn{color:var(--amber)}
 nav.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(15,16,18,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
-nav.tabs .in{display:flex;max-width:760px;width:100%}
-nav.tabs button{flex:1;min-width:0;background:none;border:0;color:var(--mut);padding:9px 0 10px;font:600 10px Inter;letter-spacing:-.01em;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav.tabs .in{display:flex;max-width:760px;width:100%;overflow-x:auto;scrollbar-width:none}
+nav.tabs .in::-webkit-scrollbar{display:none}
+nav.tabs button{flex:1 1 0;min-width:46px;background:none;border:0;color:var(--mut);padding:9px 0 10px;font:600 10px Inter;letter-spacing:-.01em;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 nav.tabs button .ic{font-size:18px;line-height:1}
 nav.tabs button.on{color:var(--lime)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
@@ -152,6 +153,20 @@ textarea{min-height:92px;resize:vertical;line-height:1.45}
 .login{max-width:380px;margin:0 auto;padding:18vh 22px 40px;text-align:center}
 .login img{width:220px;max-width:70%;height:auto;margin-bottom:6px}
 .login form{text-align:left;margin-top:26px}
+.cen{border-left:4px solid var(--line)}
+.cen.best{border-left-color:var(--lime)}
+.cen .nome{font:800 16px Archivo;background:transparent;border:0;border-bottom:1px dashed var(--line);border-radius:0;padding:4px 0;margin-bottom:10px}
+.item{background:var(--card2);border-radius:12px;padding:10px;margin-bottom:8px}
+.item .r1{display:flex;gap:8px;align-items:center}
+.item .r1 input{flex:1}
+.item .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.item .r2 label{font-size:11px;color:var(--mut)}
+.item .r2 input{margin-top:3px}
+.item .ci{font-size:12px;color:var(--mut);margin-top:6px}
+.item .ci b{color:var(--txt)}
+.grade{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.grade div{background:var(--card2);border-radius:10px;padding:8px 4px;text-align:center;font:800 16px Archivo}
+.grade small{display:block;font:600 11px Inter;color:var(--mut)}
 .gloss dt{font-weight:700;color:var(--lime);margin-top:10px}
 .gloss dd{color:var(--mut);font-size:13.5px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:20}
@@ -198,6 +213,14 @@ var PADRAO = {
     ]
   },
   tipoReceita: "revenda",
+  compra: { cenarios: [
+    {id:"c1", nome:"Exemplo · Fornecedor A · 50 peças", frete:60, freteGratis:0, itens:[
+      {id:"c1a", desc:"Branca algodão", qtd:30, preco:18},
+      {id:"c1b", desc:"Preta algodão", qtd:20, preco:21}]},
+    {id:"c2", nome:"Exemplo · Fornecedor A · 100 peças", frete:80, freteGratis:0, itens:[
+      {id:"c2a", desc:"Branca algodão", qtd:60, preco:16.5},
+      {id:"c2b", desc:"Preta algodão", qtd:40, preco:19}]}
+  ]},
   calc: {camiseta:22, estampa:8, embalagem:2.5, outros:1, fixosMes:150, pecasMes:40, margem:30, teste:69.9},
   atualizado: 0
 };
@@ -434,7 +457,7 @@ function limiteAno(){
 function faturadoAno(){ var ano=String(new Date().getFullYear()); return S.lancamentos.filter(function(l){return l.tipo==="e" && (l.data||"").slice(0,4)===ano;}).reduce(function(a,l){return a+num(l.valor);},0); }
 
 /* ---------- navegação ---------- */
-var ABAS=[["inicio","🏠","Início"],["etapas","✅","Etapas"],["dinheiro","💰","Dinheiro"],["precos","🏷️","Preços"],["produtos","👕","Produtos"],["plano","📋","Plano"],["relatorio","📊","Relatório"]];
+var ABAS=[["inicio","🏠","Início"],["etapas","✅","Etapas"],["dinheiro","💰","Dinheiro"],["precos","🏷️","Preços"],["produtos","👕","Produtos"],["plano","📋","Plano"],["relatorio","📊","Relatório"],["compra","🛒","Compra"]];
 var aba="inicio";
 try{ var sa=sessionStorage.getItem("meirafa_aba"); if(sa) aba=sa; }catch(e){}
 if(location.hash && ABAS.some(function(a){return "#"+a[0]===location.hash;})) aba=location.hash.slice(1);
@@ -917,24 +940,112 @@ function textoRelatorio(){
   return L.join("\n");
 }
 
+/* ---------- simulação de compra ---------- */
+function cenarios(){ if(!S.compra||!Array.isArray(S.compra.cenarios)) S.compra={cenarios:[]}; return S.compra.cenarios; }
+function contaCenario(c){
+  var itens=(c.itens||[]), pecas=0, sub=0;
+  itens.forEach(function(i){ var q=Math.max(0,Math.round(num(i.qtd))); pecas+=q; sub+=q*num(i.preco); });
+  var fg=num(c.freteGratis), frete = (fg>0 && sub>=fg) ? 0 : num(c.frete);
+  var total=sub+frete, fretePeca = pecas? frete/pecas : 0, medio = pecas? total/pecas : 0;
+  var k=contasPlano(), extras=num(S.calc.estampa)+num(S.calc.embalagem)+num(S.calc.outros);
+  var lucroPeca = k.preco - k.taxaMedia - (medio+extras);
+  return {pecas:pecas, sub:sub, frete:frete, freteGratis: fg>0 && sub>=fg, total:total, fretePeca:fretePeca, medio:medio, extras:extras, custoCompleto:medio+extras,
+    lucroPeca:lucroPeca, lucroTotal:lucroPeca*pecas, precoVenda:k.preco, taxaMedia:k.taxaMedia,
+    pagaEm: lucroPeca>0 ? Math.ceil(total/(k.preco-k.taxaMedia>0?(k.preco-k.taxaMedia):1)) : null,
+    meses: num(S.plano.pecasMes)>0 ? pecas/num(S.plano.pecasMes) : null};
+}
+function grade(q){ var pct=[["P",.15],["M",.35],["G",.35],["GG",.15]], r=pct.map(function(x){return [x[0],Math.floor(q*x[1])];}), soma=r.reduce(function(a,x){return a+x[1];},0), ord=[1,2,0,3], i=0; while(soma<q){ r[ord[i%4]][1]++; soma++; i++; } return r; }
+function telaCompra(){
+  var cs=cenarios();
+  var h='<div class="card hero"><div class="tag">Simulação 🛒</div><h1>Compra inicial</h1><div class="sub">Monte um <b style="color:var(--txt)">cenário</b> pra cada opção (fornecedor ou quantidade diferente) e compare. Em cada cenário, coloquem uma linha por cor ou modelo. O frete é dividido sozinho entre as peças.</div></div>';
+  h+='<div id="cmpResumo"></div>';
+  cs.forEach(function(c){
+    h+='<div class="card cen" data-cen="'+c.id+'"><input class="nome" data-cf="'+c.id+'" data-k="nome" value="'+esc(c.nome)+'" placeholder="Nome do cenário (ex.: Fornecedor B · 80 peças)">';
+    (c.itens||[]).forEach(function(i){
+      h+='<div class="item"><div class="r1"><input data-ci="'+c.id+'|'+i.id+'" data-k="desc" value="'+esc(i.desc)+'" placeholder="Cor / modelo (ex.: Branca dry fit)"><button class="btn danger" data-delitem="'+c.id+'|'+i.id+'" aria-label="Remover">✕</button></div>';
+      h+='<div class="r2"><label>Quantidade<input inputmode="numeric" data-ci="'+c.id+'|'+i.id+'" data-k="qtd" value="'+esc(i.qtd)+'"></label><label>Preço por peça (R$)<input inputmode="decimal" data-ci="'+c.id+'|'+i.id+'" data-k="preco" value="'+esc(i.preco)+'"></label></div>';
+      h+='<div class="ci" id="ci_'+i.id+'"></div></div>';
+    });
+    h+='<button class="btn sm ghost mb" data-additem="'+c.id+'">+ Cor / modelo</button>';
+    h+='<div class="grid g2"><label class="f"><span>Frete do pedido (R$)</span><input inputmode="decimal" data-cf="'+c.id+'" data-k="frete" value="'+esc(c.frete)+'"></label><label class="f"><span>Frete grátis acima de (R$)</span><input inputmode="decimal" data-cf="'+c.id+'" data-k="freteGratis" value="'+esc(c.freteGratis||"")+'" placeholder="se tiver"></label></div>';
+    h+='<div id="cr_'+c.id+'"></div>';
+    h+='<div class="grid g2 mt"><button class="btn sm ghost" data-dupcen="'+c.id+'">📄 Duplicar</button><button class="btn sm danger" data-delcen="'+c.id+'">Apagar cenário</button></div></div>';
+  });
+  h+='<button class="btn full mb" data-addcen>+ Novo cenário</button>';
+  h+='<div class="dica"><b>Dica:</b> pra ver se vale comprar mais, use <b>📄 Duplicar</b> e mude só a quantidade e o preço da faixa de desconto. A comparação lá em cima mostra na hora qual compensa.</div>';
+  h+='<div class="dica warn"><b>Camiseta branca:</b> sai mais barata e o DTF fica lindo nela, mas pra academia marca suor e suja mais fácil. Muitas marcas começam com uma mistura (ex.: 60% preta e 40% branca) pra testar o que vende mais.</div>';
+  h+='<div class="small mb">O lucro previsto usa o preço médio de venda e os canais da aba <b>Plano</b>, e o custo de estampa, embalagem e outros da aba <b>Preços</b>. É só uma simulação: nada aqui entra no Dinheiro nem no estoque.</div>';
+  return h;
+}
+function recalcCompra(){
+  var cs=cenarios(), box=document.getElementById("cmpResumo"); if(!box) return;
+  var rs=cs.map(function(c){ return {c:c, k:contaCenario(c)}; }).filter(function(x){return x.k.pecas>0;});
+  var melhor = rs.slice().sort(function(a,b){return a.k.medio-b.k.medio;})[0];
+  var h='';
+  if(rs.length){
+    h+='<div class="card"><h3>⚖️ Comparação</h3><table class="tbl"><tr><th>Cenário</th><th>Peças</th><th>Total</th><th>Por peça</th></tr>';
+    rs.slice().sort(function(a,b){return a.k.medio-b.k.medio;}).forEach(function(x){
+      h+='<tr><td>'+(x===melhor?'🏆 ':'')+esc(x.c.nome||"Sem nome")+'</td><td>'+x.k.pecas+'</td><td>'+R(x.k.total)+'</td><td class="'+(x===melhor?"pos":"")+'"><b>'+R(x.k.medio)+'</b></td></tr>';
+    });
+    h+='</table>';
+    if(rs.length>1){
+      var caro=rs.slice().sort(function(a,b){return b.k.medio-a.k.medio;})[0];
+      var eco=(caro.k.medio-melhor.k.medio);
+      h+='<div class="small mt">O cenário 🏆 sai <b class="pos">'+R(eco)+' mais barato por peça</b> que o mais caro. Em '+melhor.k.pecas+' peças, isso dá '+R(eco*melhor.k.pecas)+' de economia, mas o pedido total fica em '+R(melhor.k.total)+'. Vejam se cabe no caixa e se vocês vendem essa quantidade em uns 2 meses.</div>';
+    }
+    h+='<div class="small mt">“Por peça” = camiseta + frete dividido. Ainda não inclui estampa e embalagem (essa conta aparece em cada cenário).</div></div>';
+  }
+  box.innerHTML=h;
+  cs.forEach(function(c){
+    var k=contaCenario(c), el=document.getElementById("cr_"+c.id);
+    var card=document.querySelector('[data-cen="'+c.id+'"]'); if(card) card.classList.toggle("best", !!(melhor && melhor.c===c && rs.length>1));
+    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); ci.innerHTML = q>0 ? 'Com frete: <b>'+R(num(i.preco)+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco))+' no total' : 'Coloque a quantidade'; } });
+    if(!el) return;
+    if(!k.pecas){ el.innerHTML='<div class="small">Coloque quantidade e preço pra ver as contas.</div>'; return; }
+    var e='<div class="canal"><div class="ln"><span>Camisetas ('+k.pecas+' peças)</span><span>'+R(k.sub)+'</span></div>';
+    e+='<div class="ln"><span>Frete'+(k.freteGratis?' <span class="badge">grátis!</span>':'')+'</span><span>'+R(k.frete)+'</span></div>';
+    e+='<div class="ln"><span><b style="color:var(--txt)">Total do pedido</b></span><span><b>'+R(k.total)+'</b></span></div>';
+    e+='<div class="ln"><span>Camiseta + frete, por peça</span><span><b class="pos">'+R(k.medio)+'</b></span></div>';
+    e+='<div class="ln"><span>+ estampa, embalagem e outros</span><span>'+R(k.extras)+'</span></div>';
+    e+='<div class="ln"><span><b style="color:var(--txt)">Custo completo por peça</b></span><span><b>'+R(k.custoCompleto)+'</b></span></div></div>';
+    e+='<div class="grid g2 mt"><div class="stat"><div class="l">Lucro por peça*</div><div class="v '+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</div></div><div class="stat"><div class="l">Se vender tudo*</div><div class="v '+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</div></div></div>';
+    var fn=num(c.freteGratis);
+    if(fn>0 && !k.freteGratis) e+='<div class="dica warn mt" style="margin-bottom:0">Faltam <b>'+R(fn-k.sub)+'</b> em camisetas pra ganhar o frete grátis (economia de '+R(num(c.frete))+').</div>';
+    e+='<div class="small mt">* Vendendo a '+R(k.precoVenda)+' em média (aba Plano), já tirando as taxas das plataformas.';
+    if(k.pagaEm) e+=' O pedido se paga com as primeiras <b style="color:var(--txt)">'+k.pagaEm+' vendas</b>.';
+    if(k.meses) e+=' Na meta de '+num(S.plano.pecasMes)+' peças/mês, esse estoque dura '+(k.meses<1?'<b style="color:var(--txt)">menos de 1 mês</b>':'uns <b style="color:var(--txt)">'+k.meses.toFixed(1).replace(".",",")+' meses</b>')+'.';
+    e+='</div>';
+    e+='<div class="small mt" style="color:var(--txt);font-weight:600">Grade de tamanhos sugerida (por cor)</div>';
+    (c.itens||[]).forEach(function(i){ var q=Math.round(num(i.qtd)); if(q<=0) return;
+      e+='<div class="small mt">'+esc(i.desc||"Sem nome")+' · '+q+' peças</div><div class="grade">'+grade(q).map(function(g){return '<div>'+g[1]+'<small>'+g[0]+'</small></div>';}).join("")+'</div>'; });
+    el.innerHTML=e;
+  });
+}
+
 /* ---------- render ---------- */
 function render(){
   if(!logado) return;
   var app=document.getElementById("app");
-  var corpo = aba==="relatorio"?telaRelatorio():aba==="plano"?telaPlano():aba==="etapas"?telaEtapas():aba==="dinheiro"?telaDinheiro():aba==="precos"?telaPrecos():aba==="produtos"?telaProdutos():telaInicio();
+  var corpo = aba==="compra"?telaCompra():aba==="relatorio"?telaRelatorio():aba==="plano"?telaPlano():aba==="etapas"?telaEtapas():aba==="dinheiro"?telaDinheiro():aba==="precos"?telaPrecos():aba==="produtos"?telaProdutos():telaInicio();
   app.innerHTML = '<header class="top"><div class="brand">'+(LOGOS[S.logo]?'<img src="'+LOGOS[S.logo]+'" alt="'+esc(S.marca)+'">':'<div class="logo">'+esc((S.marca||"M").trim().charAt(0).toUpperCase())+'</div><div><b>'+esc(S.marca)+'</b><small>Painel do MEI</small></div>')+'</div><span id="chipSalvo" class="chip"></span></header>'+
     '<main class="wrap">'+corpo+'</main>'+
     '<nav class="tabs"><div class="in">'+ABAS.map(function(a){return '<button data-ir="'+a[0]+'" class="'+(aba===a[0]?"on":"")+'"><span class="ic">'+a[1]+'</span>'+a[2]+'</button>';}).join("")+'</div></nav>';
   atualizaChip();
   if(aba==="precos") resultadosPreco();
   if(aba==="plano") resultadosPlano();
+  if(aba==="compra") recalcCompra();
 }
 
 /* ---------- eventos ---------- */
 document.addEventListener("click",function(ev){
-  var t=ev.target.closest("[data-sair],[data-logo],[data-copiarel],[data-addinv],[data-delinv],[data-copiaplano],[data-ir],[data-ck],[data-fase],[data-tipo],[data-del],[data-das],[data-csv],[data-salvaprod],[data-novoprod],[data-editprod],[data-delprod],[data-est],[data-venda],[data-fechar]");
+  var t=ev.target.closest("[data-additem],[data-delitem],[data-addcen],[data-dupcen],[data-delcen],[data-sair],[data-logo],[data-copiarel],[data-addinv],[data-delinv],[data-copiaplano],[data-ir],[data-ck],[data-fase],[data-tipo],[data-del],[data-das],[data-csv],[data-salvaprod],[data-novoprod],[data-editprod],[data-delprod],[data-est],[data-venda],[data-fechar]");
   if(!t) return;
   var d=t.dataset;
+  if(d.additem){ var cA=cenarios().find(function(c){return c.id===d.additem;}); if(cA){ cA.itens.push({id:uid(),desc:"",qtd:"",preco:""}); salvar(); render(); } return; }
+  if(d.delitem){ var pr2=d.delitem.split("|"), cD=cenarios().find(function(c){return c.id===pr2[0];}); if(cD){ cD.itens=cD.itens.filter(function(i){return i.id!==pr2[1];}); salvar(); render(); } return; }
+  if(d.addcen!==undefined){ cenarios().push({id:uid(),nome:"Fornecedor "+String.fromCharCode(65+cenarios().length%26),frete:0,freteGratis:0,itens:[{id:uid(),desc:"Branca",qtd:"",preco:""},{id:uid(),desc:"Preta",qtd:"",preco:""}]}); salvar(); render(); window.scrollTo(0,document.body.scrollHeight); return; }
+  if(d.dupcen){ var cO=cenarios().find(function(c){return c.id===d.dupcen;}); if(cO){ var nc=JSON.parse(JSON.stringify(cO)); nc.id=uid(); nc.nome=(cO.nome||"Cenário")+" (cópia)"; nc.itens.forEach(function(i){i.id=uid();}); var ix=cenarios().indexOf(cO); cenarios().splice(ix+1,0,nc); salvar(); render(); toast("Cenário duplicado 📄"); } return; }
+  if(d.delcen){ S.compra.cenarios=cenarios().filter(function(c){return c.id!==d.delcen;}); salvar(); render(); toast("Cenário apagado"); return; }
   if(d.sair!==undefined){ sair(""); return; }
   if(d.logo){ S.logo=d.logo; salvar(); render(); var c=document.querySelector("details.cfg"); if(c) c.open=true; toast("Logo trocado! ✨"); return; }
   if(d.copiarel!==undefined){ try{ navigator.clipboard.writeText(textoRelatorio()).then(function(){toast("Relatório copiado! 📊");},function(){toast("Não consegui copiar 😕");}); }catch(e){ toast("Não consegui copiar 😕"); } return; }
@@ -1004,6 +1115,8 @@ document.addEventListener("input",function(ev){
   if(d.calc){ S.calc[d.calc]=t.value; if(d.calc==="margem"){var ml=document.getElementById("mLbl"); if(ml) ml.textContent=t.value+"%";} resultadosPreco();
     guardarCache();
     clearTimeout(calcTimer); calcTimer=setTimeout(salvar, 4000); }
+  if(d.cf){ var cX=cenarios().find(function(c){return c.id===d.cf;}); if(cX){ cX[d.k] = d.k==="nome"? t.value : num(t.value); recalcCompra(); } }
+  if(d.ci){ var pp=d.ci.split("|"), cY=cenarios().find(function(c){return c.id===pp[0];}), iY=cY&&cY.itens.find(function(i){return i.id===pp[1];}); if(iY){ iY[d.k] = d.k==="desc"? t.value : num(t.value); recalcCompra(); } }
   if(d.pn){ S.plano[d.pn]=num(t.value); resultadosPlano(); }
   if(d.mix){ S.plano.mix[d.mix]=num(t.value); resultadosPlano(); }
   if(d.inv){ var it=S.plano.inv.find(function(i){return i.id===d.inv;}); if(it){ it[d.campo] = d.campo==="valor"?num(t.value):t.value; resultadosPlano(); } }
@@ -1018,7 +1131,7 @@ document.addEventListener("change",function(ev){
   if(t.id==="tipoReceita"){ S.tipoReceita=t.value; salvar(); render(); }
   if(t.id==="mesSel"){ mesSel=t.value||mesAtual(); render(); }
   if(d.pt){ S.plano.textos[d.pt]=t.value; salvar(); var q=t.closest(".pq"); if(q){ var okEl=q.querySelector(".ok"); var ok=t.value.trim().length>=10; if(ok&&!okEl){ q.querySelector(".q").insertAdjacentHTML("beforeend",'<span class="ok">✓</span>'); } if(!ok&&okEl) okEl.remove(); } var pn=nivelPlano(), en=document.getElementById("planoN"), eb=document.getElementById("planoBar"); if(en) en.textContent=pn+"/"+PERGUNTAS.length; if(eb) eb.style.width=Math.round(pn/PERGUNTAS.length*100)+"%"; }
-  if(d.pn||d.mix||d.inv) salvar();
+  if(d.pn||d.mix||d.inv||d.cf||d.ci) salvar();
   if(d.cfg){ S[d.cfg] = d.cfg==="dasValor" ? num(t.value) : t.value; salvar(); render(); }
 });
 
