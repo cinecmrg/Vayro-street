@@ -198,7 +198,7 @@ var PADRAO = {
       {min:100, pct:14, fixa:20},
       {min:200, pct:14, fixa:26}
     ],
-    sheinPct: 16, sheinLog: 0,
+    sheinPct: 18, sheinLog: 5,
     diretaPct: 0, diretaFixa: 0
   },
   plano: {
@@ -606,7 +606,7 @@ function telaPrecos(){
   });
   h+='<div class="small mb">A comissão da Shopee incide só no preço do produto (não no frete) e já inclui o programa de frete grátis.</div>';
   h+='<h3 class="mt">Shein</h3><div class="grid g2"><label class="f"><span>Comissão %</span><input inputmode="decimal" data-tx="sheinPct" value="'+t.sheinPct+'"></label><label class="f"><span>Custo logístico por item R$</span><input inputmode="decimal" data-tx="sheinLog" value="'+t.sheinLog+'"></label></div>';
-  h+='<div class="small mb">Padrão 16%, mas algumas categorias pagam 18% a 20%. A Shein pode cobrar uma taxa de logística conforme o peso — veja no painel de vocês.</div>';
+  h+='<div class="small mb">Desde março/2026 a comissão é 18% na maioria das categorias e 20% em Moda Feminina (se for vender baby look nessa categoria, use 20%). Não tem taxa fixa por item. A Shein cobra um custo de logística por pedido conforme o peso: camiseta embalada costuma ficar na faixa de R$ 4 a R$ 5. Vendedor novo tem alguns meses sem comissão. Confiram os valores na Central do Vendedor.</div>';
   h+='<h3 class="mt">Venda direta (Instagram, academia)</h3><div class="grid g2"><label class="f"><span>Taxa maquininha/link %</span><input inputmode="decimal" data-tx="diretaPct" value="'+t.diretaPct+'"></label><label class="f"><span>Outro custo por venda R$</span><input inputmode="decimal" data-tx="diretaFixa" value="'+t.diretaFixa+'"></label></div>';
   h+='<div class="small">No Pix normalmente é 0%. No cartão, coloquem a taxa da maquininha.</div>';
   h+='</details></div>';
@@ -1014,7 +1014,7 @@ function recalcCompra(){
   cs.forEach(function(c){
     var k=contaCenario(c), el=document.getElementById("cr_"+c.id);
     var card=document.querySelector('[data-cen="'+c.id+'"]'); if(card) card.classList.toggle("best", !!(melhor && melhor.c===c && rs.length>1));
-    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); var ic=itemConta(i,k); ci.innerHTML = q>0 ? (k.desc>0?'Com desconto e frete: ':'Com frete: ')+'<b>'+R(num(i.preco)*k.fatorDesc+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco)*k.fatorDesc)+' no total<br>Vendendo a '+R(ic.venda)+(ic.propria?'':' (preço médio do Plano)')+': lucro de <b class="'+(ic.lucro>=0?"pos":"neg")+'">'+R(ic.lucro)+'</b> por peça ('+(ic.venda>0?Math.round(ic.lucro/ic.venda*100):0)+'%) · '+R(ic.lucro*q)+' se vender todas' : 'Coloque a quantidade'; } });
+    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); var ic=itemConta(i,k); ci.innerHTML = q>0 ? (k.desc>0?'Com desconto e frete: ':'Com frete: ')+'<b>'+R(num(i.preco)*k.fatorDesc+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco)*k.fatorDesc)+' no total<br>Vendendo a '+R(ic.venda)+(ic.propria?'':' (preço médio do Plano)')+': lucro de <b class="'+(ic.lucro>=0?"pos":"neg")+'">'+R(ic.lucro)+'</b> por peça ('+(ic.venda>0?Math.round(ic.lucro/ic.venda*100):0)+'%) · '+R(ic.lucro*q)+' se vender todas<br><span style="font-size:11.5px">Lucro por canal: '+CANAIS.map(function(cn){ return cn.n.replace("Venda direta","Direta")+' <b class="'+((ic.venda-taxa(cn.id,ic.venda)-ic.custo)>=0?"pos":"neg")+'">'+R(ic.venda-taxa(cn.id,ic.venda)-ic.custo)+'</b>'; }).join(" · ")+'</span>' : 'Coloque a quantidade'; } });
     if(!el) return;
     if(!k.pecas){ el.innerHTML='<div class="small">Coloque quantidade e preço pra ver as contas.</div>'; return; }
     var e='<div class="canal"><div class="ln"><span>Camisetas ('+k.pecas+' peças)</span><span>'+R(k.sub)+'</span></div>';
