@@ -987,6 +987,15 @@ function telaCompra(){
     h+='<div class="grid g2"><label class="f"><span>Frete do pedido (R$)</span><input inputmode="decimal" data-cf="'+c.id+'" data-k="frete" value="'+esc(c.frete)+'"></label><label class="f"><span>Frete grátis acima de (R$)</span><input inputmode="decimal" data-cf="'+c.id+'" data-k="freteGratis" value="'+esc(c.freteGratis||"")+'" placeholder="se tiver"></label></div>';
     h+='<div class="grid g2"><label class="f"><span>Desconto da compra (%)</span><input inputmode="decimal" data-cf="'+c.id+'" data-k="descPct" value="'+esc(c.descPct||"")+'" placeholder="ex.: 10"></label><label class="f"><span>Desconto extra (R$)</span><input inputmode="decimal" data-cf="'+c.id+'" data-k="descExtra" value="'+esc(c.descExtra||"")+'" placeholder="cupom, Pix…"></label></div>';
     h+='<div id="cr_'+c.id+'"></div>';
+    h+='<div class="canal mt"><div class="row" style="margin-bottom:8px"><b>🎁 Combos</b><button class="btn sm ghost" data-addcombo="'+c.id+'">+ Combo</button></div>';
+    if(!(c.combos||[]).length) h+='<div class="small">Ex.: “Kit 3 oversized por R$ 219,90”. Toque em + Combo pra simular.</div>';
+    (c.combos||[]).forEach(function(cb){
+      h+='<div class="item"><div class="r1"><input data-cb="'+c.id+'|'+cb.id+'" data-k="nome" value="'+esc(cb.nome)+'" placeholder="Nome do combo"><button class="btn danger" data-delcombo="'+c.id+'|'+cb.id+'" aria-label="Remover">✕</button></div>';
+      h+='<label class="f" style="margin:8px 0 0"><span>Modelo</span><select data-cb="'+c.id+'|'+cb.id+'" data-k="modelo"><option value="">Qualquer (média do pedido)</option>'+(c.itens||[]).map(function(i){return '<option value="'+i.id+'"'+(cb.modelo===i.id?' selected':'')+'>'+esc(i.desc||"Sem nome")+'</option>';}).join("")+'</select></label>';
+      h+='<div class="r2" style="grid-template-columns:1fr 1fr"><label>Qtd de camisetas<input inputmode="numeric" data-cb="'+c.id+'|'+cb.id+'" data-k="qtd" value="'+esc(cb.qtd)+'"></label><label>Preço do combo (R$)<input inputmode="decimal" data-cb="'+c.id+'|'+cb.id+'" data-k="preco" value="'+esc(cb.preco||"")+'"></label></div>';
+      h+='<div class="ci" id="cbr_'+cb.id+'"></div></div>';
+    });
+    h+='</div>';
     h+='<div class="grid g2 mt"><button class="btn sm ghost" data-dupcen="'+c.id+'">📄 Duplicar</button><button class="btn sm danger" data-delcen="'+c.id+'">Apagar cenário</button></div></div>';
   });
   h+='<button class="btn full mb" data-addcen>+ Novo cenário</button>';
@@ -1071,6 +1080,28 @@ function recalcCompra(){
     (c.itens||[]).forEach(function(i){ var q=Math.round(num(i.qtd)); if(q<=0) return;
       e+='<div class="small mt">'+esc(i.desc||"Sem nome")+' · '+q+' peças</div><div class="grade">'+grade(q).map(function(g){return '<div>'+g[1]+'<small>'+g[0]+'</small></div>';}).join("")+'</div>'; });
     el.innerHTML=e;
+    (c.combos||[]).forEach(function(cb){
+      var out=document.getElementById("cbr_"+cb.id); if(!out) return;
+      var q=Math.max(0,Math.round(num(cb.qtd))), pc=num(cb.preco);
+      var it=(c.itens||[]).find(function(i){return i.id===cb.modelo;});
+      var unitCusto, unitVenda, unitLucro;
+      if(it){ var icb=itemConta(it,k); unitCusto=icb.custo; unitVenda=icb.venda; unitLucro=icb.lucro; }
+      else { unitCusto=k.custoCompleto; unitVenda=k.vendaMedia; unitLucro=k.lucroPeca; }
+      if(!q){ out.innerHTML='Coloque a quantidade de camisetas.'; return; }
+      var normal=unitVenda*q, custo=unitCusto*q;
+      var r='Separadas sairiam <b>'+R(normal)+'</b> pro cliente.';
+      if(pc>0){
+        var tx=taxaMediaEm(pc), lucro=pc-tx-custo, sep=unitLucro*q, desc=normal-pc;
+        r+='<br>Desconto pro cliente: <b class="pos">'+R(desc)+'</b> ('+(normal>0?Math.round(desc/normal*100):0)+'%) · sai '+R(pc/q)+' cada';
+        r+='<br>Combo '+R(pc)+' − taxa '+(nomeMix()||'')+' '+R(tx)+' − custo '+R(custo)+' = lucro <b class="'+(lucro>=0?"pos":"neg")+'">'+R(lucro)+'</b> ('+Math.round(lucro/pc*100)+'%) · '+R(lucro/q)+' por camiseta';
+        var dif=lucro-sep;
+        r+='<br>Vendendo '+q+' separadas (em '+q+' pedidos) o lucro seria '+R(sep)+'. ';
+        r+= dif>=0 ? '<span class="pos">O combo rende <b>'+R(dif)+' a mais</b> ✅</span>' : 'O combo rende <b>'+R(-dif)+' a menos</b>, mas pode valer a pena se fizer o cliente levar mais peças. 😉';
+      }
+      var pmin=arredonda90(precoIdeal(CANAIS.filter(function(cn){return num(S.plano.mix[cn.id])>0;})[0] ? CANAIS.filter(function(cn){return num(S.plano.mix[cn.id])>0;})[0].id : "shein", custo, num(S.calc.margem)));
+      if(pmin) r+='<br>💡 Pra ter '+num(S.calc.margem)+'% de margem no combo, cobre no mínimo <b>'+R(pmin)+'</b>.';
+      out.innerHTML=r;
+    });
   });
 }
 
@@ -1090,13 +1121,15 @@ function render(){
 
 /* ---------- eventos ---------- */
 document.addEventListener("click",function(ev){
-  var t=ev.target.closest("[data-additem],[data-delitem],[data-addcen],[data-dupcen],[data-delcen],[data-sair],[data-logo],[data-copiarel],[data-addinv],[data-delinv],[data-copiaplano],[data-ir],[data-ck],[data-fase],[data-tipo],[data-del],[data-das],[data-csv],[data-salvaprod],[data-novoprod],[data-editprod],[data-delprod],[data-est],[data-venda],[data-fechar]");
+  var t=ev.target.closest("[data-addcombo],[data-delcombo],[data-additem],[data-delitem],[data-addcen],[data-dupcen],[data-delcen],[data-sair],[data-logo],[data-copiarel],[data-addinv],[data-delinv],[data-copiaplano],[data-ir],[data-ck],[data-fase],[data-tipo],[data-del],[data-das],[data-csv],[data-salvaprod],[data-novoprod],[data-editprod],[data-delprod],[data-est],[data-venda],[data-fechar]");
   if(!t) return;
   var d=t.dataset;
+  if(d.addcombo){ var cC=cenarios().find(function(c){return c.id===d.addcombo;}); if(cC){ if(!cC.combos) cC.combos=[]; cC.combos.push({id:uid(),nome:"Kit 3 camisetas",modelo:"",qtd:3,preco:""}); salvar(); render(); } return; }
+  if(d.delcombo){ var pc2=d.delcombo.split("|"), cE=cenarios().find(function(c){return c.id===pc2[0];}); if(cE){ cE.combos=(cE.combos||[]).filter(function(x){return x.id!==pc2[1];}); salvar(); render(); } return; }
   if(d.additem){ var cA=cenarios().find(function(c){return c.id===d.additem;}); if(cA){ cA.itens.push({id:uid(),desc:"",qtd:"",preco:""}); salvar(); render(); } return; }
   if(d.delitem){ var pr2=d.delitem.split("|"), cD=cenarios().find(function(c){return c.id===pr2[0];}); if(cD){ cD.itens=cD.itens.filter(function(i){return i.id!==pr2[1];}); salvar(); render(); } return; }
   if(d.addcen!==undefined){ cenarios().push({id:uid(),nome:"Fornecedor "+String.fromCharCode(65+cenarios().length%26),frete:0,freteGratis:0,itens:[{id:uid(),desc:"Branca",qtd:"",preco:""},{id:uid(),desc:"Preta",qtd:"",preco:""}]}); salvar(); render(); window.scrollTo(0,document.body.scrollHeight); return; }
-  if(d.dupcen){ var cO=cenarios().find(function(c){return c.id===d.dupcen;}); if(cO){ var nc=JSON.parse(JSON.stringify(cO)); nc.id=uid(); nc.nome=(cO.nome||"Cenário")+" (cópia)"; nc.itens.forEach(function(i){i.id=uid();}); var ix=cenarios().indexOf(cO); cenarios().splice(ix+1,0,nc); salvar(); render(); toast("Cenário duplicado 📄"); } return; }
+  if(d.dupcen){ var cO=cenarios().find(function(c){return c.id===d.dupcen;}); if(cO){ var nc=JSON.parse(JSON.stringify(cO)); nc.id=uid(); nc.nome=(cO.nome||"Cenário")+" (cópia)"; var mapa={}; nc.itens.forEach(function(i){ var n=uid(); mapa[i.id]=n; i.id=n; }); (nc.combos||[]).forEach(function(b){ b.id=uid(); if(b.modelo) b.modelo=mapa[b.modelo]||""; }); var ix=cenarios().indexOf(cO); cenarios().splice(ix+1,0,nc); salvar(); render(); toast("Cenário duplicado 📄"); } return; }
   if(d.delcen){ S.compra.cenarios=cenarios().filter(function(c){return c.id!==d.delcen;}); salvar(); render(); toast("Cenário apagado"); return; }
   if(d.sair!==undefined){ sair(""); return; }
   if(d.logo){ S.logo=d.logo; salvar(); render(); var c=document.querySelector("details.cfg"); if(c) c.open=true; toast("Logo trocado! ✨"); return; }
@@ -1169,6 +1202,7 @@ document.addEventListener("input",function(ev){
     guardarCache();
     clearTimeout(calcTimer); calcTimer=setTimeout(salvar, 4000); }
   if(d.cf){ var cX=cenarios().find(function(c){return c.id===d.cf;}); if(cX){ cX[d.k] = d.k==="nome"? t.value : num(t.value); recalcCompra(); } }
+  if(d.cb){ var pq=d.cb.split("|"), cZ=cenarios().find(function(c){return c.id===pq[0];}), bZ=cZ&&(cZ.combos||[]).find(function(x){return x.id===pq[1];}); if(bZ){ bZ[d.k] = (d.k==="nome"||d.k==="modelo")? t.value : num(t.value); recalcCompra(); } }
   if(d.ci){ var pp=d.ci.split("|"), cY=cenarios().find(function(c){return c.id===pp[0];}), iY=cY&&cY.itens.find(function(i){return i.id===pp[1];}); if(iY){ iY[d.k] = d.k==="desc"? t.value : num(t.value); recalcCompra(); } }
   if(d.pn){ S.plano[d.pn]=num(t.value); resultadosPlano(); }
   if(d.mix){ S.plano.mix[d.mix]=num(t.value); resultadosPlano(); }
@@ -1185,7 +1219,7 @@ document.addEventListener("change",function(ev){
   if(t.id==="tipoReceita"){ S.tipoReceita=t.value; salvar(); render(); }
   if(t.id==="mesSel"){ mesSel=t.value||mesAtual(); render(); }
   if(d.pt){ S.plano.textos[d.pt]=t.value; salvar(); var q=t.closest(".pq"); if(q){ var okEl=q.querySelector(".ok"); var ok=t.value.trim().length>=10; if(ok&&!okEl){ q.querySelector(".q").insertAdjacentHTML("beforeend",'<span class="ok">✓</span>'); } if(!ok&&okEl) okEl.remove(); } var pn=nivelPlano(), en=document.getElementById("planoN"), eb=document.getElementById("planoBar"); if(en) en.textContent=pn+"/"+PERGUNTAS.length; if(eb) eb.style.width=Math.round(pn/PERGUNTAS.length*100)+"%"; }
-  if(d.pn||d.mix||d.inv||d.cf||d.ci) salvar();
+  if(d.pn||d.mix||d.inv||d.cf||d.ci||d.cb) salvar();
   if(d.cfg){ S[d.cfg] = d.cfg==="dasValor" ? num(t.value) : t.value; salvar(); render(); }
 });
 
