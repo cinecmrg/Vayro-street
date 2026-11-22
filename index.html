@@ -952,13 +952,15 @@ function contaCenario(c){
   var k=contasPlano(), extras=num(S.calc.estampa)+num(S.calc.embalagem)+num(S.calc.outros);
   var fixPeca = num(S.calc.fixosMes)/pecasRef();
   var base={fatorDesc: sub>0? liq/sub:1, fretePeca:fretePeca, extras:extras, fixPeca:fixPeca}, lt=0, liqTot=0;
-  itens.forEach(function(i){ var ic=itemConta(i,base); lt+=ic.lucro*ic.q; liqTot+=ic.liq*ic.q; });
+  var vendaTot=0, taxaTot=0;
+  itens.forEach(function(i){ var ic=itemConta(i,base); lt+=ic.lucro*ic.q; liqTot+=ic.liq*ic.q; vendaTot+=ic.venda*ic.q; taxaTot+=ic.taxa*ic.q; });
   var lucroPeca = pecas? lt/pecas : 0, liqMedio = pecas? liqTot/pecas : 0;
   return {pecas:pecas, sub:sub, descPct:descPct, descA:descA, descB:descB, desc:desc, liq:liq, fatorDesc: sub>0? liq/sub : 1, frete:frete, freteGratis: fg>0 && liq>=fg, total:total, fretePeca:fretePeca, medio:medio, extras:extras, fixPeca:fixPeca, custoCompleto:medio+extras+fixPeca,
-    lucroPeca:lucroPeca, lucroTotal:lt, precoVenda:k.preco, taxaMedia:k.taxaMedia,
+    lucroPeca:lucroPeca, lucroTotal:lt, vendaMedia: pecas? vendaTot/pecas:0, taxaMediaPeca: pecas? taxaTot/pecas:0, vendaTot:vendaTot, taxaTot:taxaTot, precoVenda:k.preco, taxaMedia:k.taxaMedia,
     pagaEm: liqMedio>0 ? Math.ceil(total/liqMedio) : null,
     meses: num(S.plano.pecasMes)>0 ? pecas/num(S.plano.pecasMes) : null};
 }
+function nomeMix(){ var m=S.plano.mix, ativos=CANAIS.filter(function(cn){return num(m[cn.id])>0;}); if(ativos.length===1) return ativos[0].n; return ativos.length? 'média dos canais da aba Plano' : ''; }
 function taxaMediaEm(preco){ var P=S.plano, mixT=num(P.mix.shopee)+num(P.mix.shein)+num(P.mix.direta)||1; return CANAIS.reduce(function(a,cn){ return a + taxa(cn.id,preco)*num(P.mix[cn.id])/mixT; },0); }
 function itemConta(i,k){ var q=Math.max(0,Math.round(num(i.qtd))), venda=num(i.venda)>0?num(i.venda):num(S.plano.preco), tx=taxaMediaEm(venda), custo=num(i.preco)*k.fatorDesc+k.fretePeca+k.extras+(k.fixPeca||0); return {q:q, venda:venda, propria:num(i.venda)>0, taxa:tx, custo:custo, lucro:venda-tx-custo, liq:venda-tx}; }
 function grade(q){ var pct=[["P",.15],["M",.35],["G",.35],["GG",.15]], r=pct.map(function(x){return [x[0],Math.floor(q*x[1])];}), soma=r.reduce(function(a,x){return a+x[1];},0), ord=[1,2,0,3], i=0; while(soma<q){ r[ord[i%4]][1]++; soma++; i++; } return r; }
@@ -1014,7 +1016,7 @@ function recalcCompra(){
   cs.forEach(function(c){
     var k=contaCenario(c), el=document.getElementById("cr_"+c.id);
     var card=document.querySelector('[data-cen="'+c.id+'"]'); if(card) card.classList.toggle("best", !!(melhor && melhor.c===c && rs.length>1));
-    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); var ic=itemConta(i,k); ci.innerHTML = q>0 ? (k.desc>0?'Com desconto e frete: ':'Com frete: ')+'<b>'+R(num(i.preco)*k.fatorDesc+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco)*k.fatorDesc)+' no total<br>Vendendo a '+R(ic.venda)+(ic.propria?'':' (preço médio do Plano)')+': lucro de <b class="'+(ic.lucro>=0?"pos":"neg")+'">'+R(ic.lucro)+'</b> por peça ('+(ic.venda>0?Math.round(ic.lucro/ic.venda*100):0)+'%) · '+R(ic.lucro*q)+' se vender todas<br><span style="font-size:11.5px">Lucro por canal: '+CANAIS.map(function(cn){ return cn.n.replace("Venda direta","Direta")+' <b class="'+((ic.venda-taxa(cn.id,ic.venda)-ic.custo)>=0?"pos":"neg")+'">'+R(ic.venda-taxa(cn.id,ic.venda)-ic.custo)+'</b>'; }).join(" · ")+'</span>' : 'Coloque a quantidade'; } });
+    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); var ic=itemConta(i,k); ci.innerHTML = q>0 ? (k.desc>0?'Com desconto e frete: ':'Com frete: ')+'<b>'+R(num(i.preco)*k.fatorDesc+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco)*k.fatorDesc)+' no total<br>Venda '+R(ic.venda)+(ic.propria?'':' (preço médio do Plano)')+' − taxa '+(nomeMix()||'')+' '+R(ic.taxa)+' − custo '+R(ic.custo)+' = lucro <b class="'+(ic.lucro>=0?"pos":"neg")+'">'+R(ic.lucro)+'</b> por peça ('+(ic.venda>0?Math.round(ic.lucro/ic.venda*100):0)+'%) · '+R(ic.lucro*q)+' se vender todas<br><span style="font-size:11.5px">Por canal: '+CANAIS.map(function(cn){ var tx=taxa(cn.id,ic.venda); return cn.n.replace("Venda direta","Direta")+' taxa '+R(tx)+' → lucro <b class="'+((ic.venda-tx-ic.custo)>=0?"pos":"neg")+'">'+R(ic.venda-tx-ic.custo)+'</b>'; }).join(" · ")+'</span><br><span style="font-size:11.5px">💡 Preço sugerido pra '+num(S.calc.margem)+'% de margem: '+CANAIS.filter(function(cn){ return num(S.plano.mix[cn.id])>0; }).map(function(cn){ var pi=arredonda90(precoIdeal(cn.id, ic.custo, num(S.calc.margem))); return cn.n.replace("Venda direta","Direta")+' <b>'+(pi?R(pi):'—')+'</b>'; }).join(" · ")+'</span>' : 'Coloque a quantidade'; } });
     if(!el) return;
     if(!k.pecas){ el.innerHTML='<div class="small">Coloque quantidade e preço pra ver as contas.</div>'; return; }
     var e='<div class="canal"><div class="ln"><span>Camisetas ('+k.pecas+' peças)</span><span>'+R(k.sub)+'</span></div>';
@@ -1028,6 +1030,11 @@ function recalcCompra(){
     if(num(S.calc.outros)) e+='<div class="ln"><span>+ outros</span><span>'+R(num(S.calc.outros))+'</span></div>';
     e+='<div class="ln"><span>+ custos fixos (DAS etc.) por peça</span><span>'+R(k.fixPeca)+'</span></div>';
     e+='<div class="ln"><span><b style="color:var(--txt)">Custo completo por peça</b></span><span><b>'+R(k.custoCompleto)+'</b></span></div></div>';
+    e+='<div class="canal mt"><div class="ln"><span>Preço de venda médio</span><span>'+R(k.vendaMedia)+'</span></div>';
+    e+='<div class="ln"><span>(−) Taxa da plataforma'+(nomeMix()?' ('+nomeMix()+')':'')+'</span><span class="neg">−'+R(k.taxaMediaPeca)+'</span></div>';
+    e+='<div class="ln"><span>(−) Custo completo</span><span class="neg">−'+R(k.custoCompleto)+'</span></div>';
+    e+='<div class="ln"><span><b style="color:var(--txt)">= Lucro médio por peça</b></span><span><b class="'+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</b></span></div>';
+    e+='<div class="ln"><span>Taxas no pedido todo (se vender tudo)</span><span>'+R(k.taxaTot)+'</span></div></div>';
     e+='<div class="grid g2 mt"><div class="stat"><div class="l">Lucro médio por peça*</div><div class="v '+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</div></div><div class="stat"><div class="l">Se vender tudo*</div><div class="v '+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</div></div></div>';
     var fn=num(c.freteGratis);
     if(k.desc>0) e+='<div class="dica mt" style="margin-bottom:0">💸 Os descontos economizaram <b>'+R(k.desc)+'</b> nesse pedido ('+R(k.desc/k.pecas)+' por peça).</div>';
