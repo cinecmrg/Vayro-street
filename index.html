@@ -964,6 +964,13 @@ function grade(q){ var pct=[["P",.15],["M",.35],["G",.35],["GG",.15]], r=pct.map
 function telaCompra(){
   var cs=cenarios();
   var h='<div class="card hero"><div class="tag">Simulação 🛒</div><h1>Compra inicial</h1><div class="sub">Monte um <b style="color:var(--txt)">cenário</b> pra cada opção (fornecedor ou quantidade diferente) e compare. Em cada cenário, coloquem uma linha por cor ou modelo. O frete é dividido sozinho entre as peças.</div></div>';
+  var cc=S.calc;
+  function ic(k,l,ph){ return '<label class="f"><span>'+l+'</span><input inputmode="decimal" data-calc="'+k+'" value="'+esc(cc[k])+'" placeholder="'+(ph||"0")+'"></label>'; }
+  h+='<div class="card"><h3>🧾 Outros custos por peça</h3><div class="sub mb">Além da camiseta, cada peça tem esses custos. São os mesmos da aba Preços: mudou aqui, muda lá também.</div>';
+  h+='<div class="grid g3">'+ic("estampa","Estampa / DTF (R$)")+ic("embalagem","Embalagem + tag (R$)")+ic("outros","Outros (R$)")+'</div>';
+  h+='<div class="small mb">“Outros” = energia da prensa, perdas, linha, etc.</div>';
+  h+='<div class="grid g2">'+ic("fixosMes","Custos fixos do mês (R$)")+ic("pecasMes","Peças vendidas por mês")+'</div>';
+  h+='<div class="small">Custos fixos = <b style="color:var(--txt)">DAS ('+R(num(S.dasValor))+')</b> + internet + Canva + anúncios… Eles são divididos pelas peças vendidas no mês: <b style="color:var(--txt)" id="fixoPecaLbl">'+R(num(cc.fixosMes)/Math.max(1,num(cc.pecasMes)))+' por peça</b>.</div></div>';
   h+='<div id="cmpResumo"></div>';
   cs.forEach(function(c){
     h+='<div class="card cen" data-cen="'+c.id+'"><input class="nome" data-cf="'+c.id+'" data-k="nome" value="'+esc(c.nome)+'" placeholder="Nome do cenário (ex.: Fornecedor B · 80 peças)">';
@@ -1015,8 +1022,10 @@ function recalcCompra(){
     e+='<div class="ln"><span>Frete'+(k.freteGratis?' <span class="badge">grátis!</span>':'')+'</span><span>'+R(k.frete)+'</span></div>';
     e+='<div class="ln"><span><b style="color:var(--txt)">Total do pedido</b></span><span><b>'+R(k.total)+'</b></span></div>';
     e+='<div class="ln"><span>Camiseta + frete, por peça</span><span><b class="pos">'+R(k.medio)+'</b></span></div>';
-    e+='<div class="ln"><span>+ estampa, embalagem e outros</span><span>'+R(k.extras)+'</span></div>';
-    e+='<div class="ln"><span>+ custos fixos do mês (DAS etc.)</span><span>'+R(k.fixPeca)+'</span></div>';
+    e+='<div class="ln"><span>+ estampa / DTF</span><span>'+R(num(S.calc.estampa))+'</span></div>';
+    e+='<div class="ln"><span>+ embalagem + tag</span><span>'+R(num(S.calc.embalagem))+'</span></div>';
+    if(num(S.calc.outros)) e+='<div class="ln"><span>+ outros</span><span>'+R(num(S.calc.outros))+'</span></div>';
+    e+='<div class="ln"><span>+ custos fixos (DAS etc.) por peça</span><span>'+R(k.fixPeca)+'</span></div>';
     e+='<div class="ln"><span><b style="color:var(--txt)">Custo completo por peça</b></span><span><b>'+R(k.custoCompleto)+'</b></span></div></div>';
     e+='<div class="grid g2 mt"><div class="stat"><div class="l">Lucro médio por peça*</div><div class="v '+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</div></div><div class="stat"><div class="l">Se vender tudo*</div><div class="v '+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</div></div></div>';
     var fn=num(c.freteGratis);
@@ -1123,6 +1132,7 @@ document.addEventListener("submit",function(ev){
 var calcTimer=null;
 document.addEventListener("input",function(ev){
   var t=ev.target, d=t.dataset;
+  if(d.calc && aba==="compra"){ S.calc[d.calc]=t.value; var fl=document.getElementById("fixoPecaLbl"); if(fl) fl.textContent=R(num(S.calc.fixosMes)/Math.max(1,num(S.calc.pecasMes)))+" por peça"; recalcCompra(); }
   if(d.calc){ S.calc[d.calc]=t.value; if(d.calc==="margem"){var ml=document.getElementById("mLbl"); if(ml) ml.textContent=t.value+"%";} resultadosPreco();
     guardarCache();
     clearTimeout(calcTimer); calcTimer=setTimeout(salvar, 4000); }
