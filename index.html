@@ -450,10 +450,11 @@ function cardRetorno(compacto){
   if(!compacto) h+='<div class="small mt">Conta como investimento: “Investimento inicial” e “Equipamentos”. O lucro das vendas é tudo que entrou menos as outras saídas.</div>';
   return h+'</div>';
 }
+function limiteAnual(){ var v=num(S.limiteMei); return v>0? v : 81000; }
 function limiteAno(){
-  var ano=new Date().getFullYear();
-  if(S.abertura && +S.abertura.slice(0,4)===ano){ var mesAb=+S.abertura.slice(5,7); return 6750*(12-mesAb+1); }
-  return 81000;
+  var ano=new Date().getFullYear(), base=(ano>=2027?limiteAnual():81000), mensal=base/12;
+  if(S.abertura && +S.abertura.slice(0,4)===ano){ var mesAb=+S.abertura.slice(5,7); return mensal*(12-mesAb+1); }
+  return base;
 }
 function faturadoAno(){ var ano=String(new Date().getFullYear()); return S.lancamentos.filter(function(l){return l.tipo==="e" && (l.data||"").slice(0,4)===ano;}).reduce(function(a,l){return a+num(l.valor);},0); }
 
@@ -1000,9 +1001,9 @@ function recalcCompra(){
   var melhor = rs.slice().sort(function(a,b){return a.k.medio-b.k.medio;})[0];
   var h='';
   if(rs.length){
-    h+='<div class="card"><h3>⚖️ Comparação</h3><table class="tbl"><tr><th>Cenário</th><th>Peças</th><th>Total</th><th>Por peça</th></tr>';
+    h+='<div class="card"><h3>⚖️ Comparação</h3><table class="tbl"><tr><th>Cenário</th><th>Pedido</th><th>Por peça</th><th>Lucro*</th></tr>';
     rs.slice().sort(function(a,b){return a.k.medio-b.k.medio;}).forEach(function(x){
-      h+='<tr><td>'+(x===melhor?'🏆 ':'')+esc(x.c.nome||"Sem nome")+'</td><td>'+x.k.pecas+'</td><td>'+R(x.k.total)+'</td><td class="'+(x===melhor?"pos":"")+'"><b>'+R(x.k.medio)+'</b></td></tr>';
+      h+='<tr><td>'+(x===melhor?'🏆 ':'')+esc(x.c.nome||"Sem nome")+'<br><span class="small">'+x.k.pecas+' peças</span></td><td>'+R(x.k.total)+'</td><td class="'+(x===melhor?"pos":"")+'"><b>'+R(x.k.medio)+'</b></td><td class="'+(x.k.lucroTotal>=0?"pos":"neg")+'">'+R(x.k.lucroTotal)+'</td></tr>';
     });
     h+='</table>';
     if(rs.length>1){
@@ -1010,7 +1011,7 @@ function recalcCompra(){
       var eco=(caro.k.medio-melhor.k.medio);
       h+='<div class="small mt">O cenário 🏆 sai <b class="pos">'+R(eco)+' mais barato por peça</b> que o mais caro. Em '+melhor.k.pecas+' peças, isso dá '+R(eco*melhor.k.pecas)+' de economia, mas o pedido total fica em '+R(melhor.k.total)+'. Vejam se cabe no caixa e se vocês vendem essa quantidade em uns 2 meses.</div>';
     }
-    h+='<div class="small mt">“Por peça” = camiseta com desconto + frete dividido. Ainda não inclui estampa e embalagem (essa conta aparece em cada cenário).</div></div>';
+    h+='<div class="small mt">* Lucro se vender todas as camisetas do cenário. “Por peça” = camiseta com desconto + frete dividido. Ainda não inclui estampa e embalagem (essa conta aparece em cada cenário).</div></div>';
   }
   box.innerHTML=h;
   cs.forEach(function(c){
@@ -1036,6 +1037,21 @@ function recalcCompra(){
     e+='<div class="ln"><span><b style="color:var(--txt)">= Lucro médio por peça</b></span><span><b class="'+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</b></span></div>';
     e+='<div class="ln"><span>Taxas no pedido todo (se vender tudo)</span><span>'+R(k.taxaTot)+'</span></div></div>';
     e+='<div class="grid g2 mt"><div class="stat"><div class="l">Lucro médio por peça*</div><div class="v '+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</div></div><div class="stat"><div class="l">Se vender tudo*</div><div class="v '+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</div></div></div>';
+    var limA=limiteAnual(), limMes=limA/12, maxMes=k.vendaMedia>0?Math.floor(limMes/k.vendaMedia):0, pctLim=limA>0?k.vendaTot/limA*100:0;
+    e+='<div class="canal mt"><div class="row" style="margin-bottom:6px"><b>📈 Se vender todas as '+k.pecas+' camisetas</b></div>';
+    e+='<div class="ln"><span>Faturamento (vendas)</span><span>'+R(k.vendaTot)+'</span></div>';
+    e+='<div class="ln"><span>(−) Taxas da plataforma</span><span class="neg">−'+R(k.taxaTot)+'</span></div>';
+    e+='<div class="ln"><span>(−) Custos (pedido + estampa, embalagem e fixos)</span><span class="neg">−'+R(k.vendaTot-k.taxaTot-k.lucroTotal)+'</span></div>';
+    e+='<div class="ln"><span><b style="color:var(--txt)">= Lucro total</b></span><span><b class="'+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</b></span></div>';
+    e+='<div class="ln"><span>Retorno sobre o que gastou no pedido</span><span>'+(k.total>0?Math.round(k.lucroTotal/k.total*100):0)+'%</span></div></div>';
+    e+='<div class="canal mt"><div class="row" style="margin-bottom:6px"><b>🧾 Limite do MEI</b></div>';
+    e+='<label class="f" style="margin-bottom:8px"><span>Limite considerado</span><select data-limmei><option value="81000"'+(limA===81000?' selected':'')+'>R$ 81 mil por ano (regra atual)</option><option value="110000"'+(limA===110000?' selected':'')+'>R$ 110 mil por ano (proposta pra 2027)</option></select></label>';
+    e+='<div class="ln"><span>Média por mês</span><span>'+R(limMes)+'</span></div>';
+    e+='<div class="ln"><span>Máximo de camisetas por mês*</span><span><b>'+maxMes.toLocaleString("pt-BR")+' peças</b></span></div>';
+    e+='<div class="ln"><span>Máximo num ano completo*</span><span><b>'+(maxMes*12).toLocaleString("pt-BR")+' peças</b></span></div>';
+    if(S.abertura){ var ma=+S.abertura.slice(5,7), mesesAb=12-ma+1; e+='<div class="ln"><span>No 1º ano (abrindo em '+nomeMes(S.abertura)+', '+mesesAb+' meses)</span><span>'+R(limMes*mesesAb)+' · '+(maxMes*mesesAb).toLocaleString("pt-BR")+' peças</span></div>'; }
+    e+='<div class="ln"><span>Esse pedido vendido todo usa</span><span>'+pctLim.toFixed(1).replace(".",",")+'% do limite anual</span></div>';
+    e+='<div class="small" style="margin-top:6px">* Vendendo a '+R(k.vendaMedia)+' em média. O limite conta o <b style="color:var(--txt)">faturamento</b> (tudo que vendeu), não o lucro. No ano em que o MEI abre, o limite é proporcional aos meses abertos'+(S.abertura?'':' — coloquem o mês de abertura em Início → Dados da empresa')+'.</div></div>';
     var fn=num(c.freteGratis);
     if(k.desc>0) e+='<div class="dica mt" style="margin-bottom:0">💸 Os descontos economizaram <b>'+R(k.desc)+'</b> nesse pedido ('+R(k.desc/k.pecas)+' por peça).</div>';
     if(fn>0 && !k.freteGratis) e+='<div class="dica warn mt" style="margin-bottom:0">Faltam <b>'+R(fn-k.liq)+'</b> em camisetas pra ganhar o frete grátis (economia de '+R(num(c.frete))+').</div>';
@@ -1157,6 +1173,7 @@ document.addEventListener("input",function(ev){
 });
 document.addEventListener("change",function(ev){
   var t=ev.target, d=t.dataset;
+  if(t.dataset && t.dataset.limmei!==undefined){ S.limiteMei=num(t.value); salvar(); recalcCompra(); }
   if(t.id==="tipoReceita"){ S.tipoReceita=t.value; salvar(); render(); }
   if(t.id==="mesSel"){ mesSel=t.value||mesAtual(); render(); }
   if(d.pt){ S.plano.textos[d.pt]=t.value; salvar(); var q=t.closest(".pq"); if(q){ var okEl=q.querySelector(".ok"); var ok=t.value.trim().length>=10; if(ok&&!okEl){ q.querySelector(".q").insertAdjacentHTML("beforeend",'<span class="ok">✓</span>'); } if(!ok&&okEl) okEl.remove(); } var pn=nivelPlano(), en=document.getElementById("planoN"), eb=document.getElementById("planoBar"); if(en) en.textContent=pn+"/"+PERGUNTAS.length; if(eb) eb.style.width=Math.round(pn/PERGUNTAS.length*100)+"%"; }
