@@ -159,7 +159,7 @@ textarea{min-height:92px;resize:vertical;line-height:1.45}
 .item{background:var(--card2);border-radius:12px;padding:10px;margin-bottom:8px}
 .item .r1{display:flex;gap:8px;align-items:center}
 .item .r1 input{flex:1}
-.item .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.item .r2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
 .item .r2 label{font-size:11px;color:var(--mut)}
 .item .r2 input{margin-top:3px}
 .item .ci{font-size:12px;color:var(--mut);margin-top:6px}
@@ -949,12 +949,16 @@ function contaCenario(c){
   var fg=num(c.freteGratis), frete = (fg>0 && liq>=fg) ? 0 : num(c.frete);
   var total=liq+frete, fretePeca = pecas? frete/pecas : 0, medio = pecas? total/pecas : 0;
   var k=contasPlano(), extras=num(S.calc.estampa)+num(S.calc.embalagem)+num(S.calc.outros);
-  var lucroPeca = k.preco - k.taxaMedia - (medio+extras);
+  var base={fatorDesc: sub>0? liq/sub:1, fretePeca:fretePeca, extras:extras}, lt=0, liqTot=0;
+  itens.forEach(function(i){ var ic=itemConta(i,base); lt+=ic.lucro*ic.q; liqTot+=ic.liq*ic.q; });
+  var lucroPeca = pecas? lt/pecas : 0, liqMedio = pecas? liqTot/pecas : 0;
   return {pecas:pecas, sub:sub, descPct:descPct, descA:descA, descB:descB, desc:desc, liq:liq, fatorDesc: sub>0? liq/sub : 1, frete:frete, freteGratis: fg>0 && liq>=fg, total:total, fretePeca:fretePeca, medio:medio, extras:extras, custoCompleto:medio+extras,
-    lucroPeca:lucroPeca, lucroTotal:lucroPeca*pecas, precoVenda:k.preco, taxaMedia:k.taxaMedia,
-    pagaEm: lucroPeca>0 ? Math.ceil(total/(k.preco-k.taxaMedia>0?(k.preco-k.taxaMedia):1)) : null,
+    lucroPeca:lucroPeca, lucroTotal:lt, precoVenda:k.preco, taxaMedia:k.taxaMedia,
+    pagaEm: liqMedio>0 ? Math.ceil(total/liqMedio) : null,
     meses: num(S.plano.pecasMes)>0 ? pecas/num(S.plano.pecasMes) : null};
 }
+function taxaMediaEm(preco){ var P=S.plano, mixT=num(P.mix.shopee)+num(P.mix.shein)+num(P.mix.direta)||1; return CANAIS.reduce(function(a,cn){ return a + taxa(cn.id,preco)*num(P.mix[cn.id])/mixT; },0); }
+function itemConta(i,k){ var q=Math.max(0,Math.round(num(i.qtd))), venda=num(i.venda)>0?num(i.venda):num(S.plano.preco), tx=taxaMediaEm(venda), custo=num(i.preco)*k.fatorDesc+k.fretePeca+k.extras; return {q:q, venda:venda, propria:num(i.venda)>0, taxa:tx, custo:custo, lucro:venda-tx-custo, liq:venda-tx}; }
 function grade(q){ var pct=[["P",.15],["M",.35],["G",.35],["GG",.15]], r=pct.map(function(x){return [x[0],Math.floor(q*x[1])];}), soma=r.reduce(function(a,x){return a+x[1];},0), ord=[1,2,0,3], i=0; while(soma<q){ r[ord[i%4]][1]++; soma++; i++; } return r; }
 function telaCompra(){
   var cs=cenarios();
@@ -964,7 +968,7 @@ function telaCompra(){
     h+='<div class="card cen" data-cen="'+c.id+'"><input class="nome" data-cf="'+c.id+'" data-k="nome" value="'+esc(c.nome)+'" placeholder="Nome do cenário (ex.: Fornecedor B · 80 peças)">';
     (c.itens||[]).forEach(function(i){
       h+='<div class="item"><div class="r1"><input data-ci="'+c.id+'|'+i.id+'" data-k="desc" value="'+esc(i.desc)+'" placeholder="Cor / modelo (ex.: Branca dry fit)"><button class="btn danger" data-delitem="'+c.id+'|'+i.id+'" aria-label="Remover">✕</button></div>';
-      h+='<div class="r2"><label>Quantidade<input inputmode="numeric" data-ci="'+c.id+'|'+i.id+'" data-k="qtd" value="'+esc(i.qtd)+'"></label><label>Preço por peça (R$)<input inputmode="decimal" data-ci="'+c.id+'|'+i.id+'" data-k="preco" value="'+esc(i.preco)+'"></label></div>';
+      h+='<div class="r2"><label>Qtd<input inputmode="numeric" data-ci="'+c.id+'|'+i.id+'" data-k="qtd" value="'+esc(i.qtd)+'"></label><label>Custo un. (R$)<input inputmode="decimal" data-ci="'+c.id+'|'+i.id+'" data-k="preco" value="'+esc(i.preco)+'"></label><label>Venda (R$)<input inputmode="decimal" data-ci="'+c.id+'|'+i.id+'" data-k="venda" value="'+esc(i.venda||"")+'" placeholder="'+esc(String(num(S.plano.preco)).replace(".",","))+'"></label></div>';
       h+='<div class="ci" id="ci_'+i.id+'"></div></div>';
     });
     h+='<button class="btn sm ghost mb" data-additem="'+c.id+'">+ Cor / modelo</button>';
@@ -1001,7 +1005,7 @@ function recalcCompra(){
   cs.forEach(function(c){
     var k=contaCenario(c), el=document.getElementById("cr_"+c.id);
     var card=document.querySelector('[data-cen="'+c.id+'"]'); if(card) card.classList.toggle("best", !!(melhor && melhor.c===c && rs.length>1));
-    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); ci.innerHTML = q>0 ? (k.desc>0?'Com desconto e frete: ':'Com frete: ')+'<b>'+R(num(i.preco)*k.fatorDesc+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco)*k.fatorDesc)+' no total' : 'Coloque a quantidade'; } });
+    (c.itens||[]).forEach(function(i){ var ci=document.getElementById("ci_"+i.id); if(ci){ var q=Math.round(num(i.qtd)); var ic=itemConta(i,k); ci.innerHTML = q>0 ? (k.desc>0?'Com desconto e frete: ':'Com frete: ')+'<b>'+R(num(i.preco)*k.fatorDesc+k.fretePeca)+'</b> por peça · '+R(q*num(i.preco)*k.fatorDesc)+' no total<br>Vendendo a '+R(ic.venda)+(ic.propria?'':' (preço médio do Plano)')+': lucro de <b class="'+(ic.lucro>=0?"pos":"neg")+'">'+R(ic.lucro)+'</b> por peça ('+(ic.venda>0?Math.round(ic.lucro/ic.venda*100):0)+'%) · '+R(ic.lucro*q)+' se vender todas' : 'Coloque a quantidade'; } });
     if(!el) return;
     if(!k.pecas){ el.innerHTML='<div class="small">Coloque quantidade e preço pra ver as contas.</div>'; return; }
     var e='<div class="canal"><div class="ln"><span>Camisetas ('+k.pecas+' peças)</span><span>'+R(k.sub)+'</span></div>';
@@ -1012,11 +1016,11 @@ function recalcCompra(){
     e+='<div class="ln"><span>Camiseta + frete, por peça</span><span><b class="pos">'+R(k.medio)+'</b></span></div>';
     e+='<div class="ln"><span>+ estampa, embalagem e outros</span><span>'+R(k.extras)+'</span></div>';
     e+='<div class="ln"><span><b style="color:var(--txt)">Custo completo por peça</b></span><span><b>'+R(k.custoCompleto)+'</b></span></div></div>';
-    e+='<div class="grid g2 mt"><div class="stat"><div class="l">Lucro por peça*</div><div class="v '+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</div></div><div class="stat"><div class="l">Se vender tudo*</div><div class="v '+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</div></div></div>';
+    e+='<div class="grid g2 mt"><div class="stat"><div class="l">Lucro médio por peça*</div><div class="v '+(k.lucroPeca>=0?"pos":"neg")+'">'+R(k.lucroPeca)+'</div></div><div class="stat"><div class="l">Se vender tudo*</div><div class="v '+(k.lucroTotal>=0?"pos":"neg")+'">'+R(k.lucroTotal)+'</div></div></div>';
     var fn=num(c.freteGratis);
     if(k.desc>0) e+='<div class="dica mt" style="margin-bottom:0">💸 Os descontos economizaram <b>'+R(k.desc)+'</b> nesse pedido ('+R(k.desc/k.pecas)+' por peça).</div>';
     if(fn>0 && !k.freteGratis) e+='<div class="dica warn mt" style="margin-bottom:0">Faltam <b>'+R(fn-k.liq)+'</b> em camisetas pra ganhar o frete grátis (economia de '+R(num(c.frete))+').</div>';
-    e+='<div class="small mt">* Vendendo a '+R(k.precoVenda)+' em média (aba Plano), já tirando as taxas das plataformas.';
+    e+='<div class="small mt">* Usando o preço de venda de cada camiseta (ou o preço médio da aba Plano, '+R(k.precoVenda)+', onde ficou em branco), já tirando as taxas das plataformas e o custo de estampa e embalagem.';
     if(k.pagaEm) e+=' O pedido se paga com as primeiras <b style="color:var(--txt)">'+k.pagaEm+' vendas</b>.';
     if(k.meses) e+=' Na meta de '+num(S.plano.pecasMes)+' peças/mês, esse estoque dura '+(k.meses<1?'<b style="color:var(--txt)">menos de 1 mês</b>':'uns <b style="color:var(--txt)">'+k.meses.toFixed(1).replace(".",",")+' meses</b>')+'.';
     e+='</div>';
