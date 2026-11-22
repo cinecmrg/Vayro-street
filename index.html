@@ -408,9 +408,10 @@ function taxa(canal, p){
   if(canal==="shein") return p*num(t.sheinPct)/100 + num(t.sheinLog);
   return p*num(t.diretaPct)/100 + num(t.diretaFixa);
 }
+function pecasRef(){ var a=num(S.calc.pecasMes); if(a>0) return a; var b=num(S.plano&&S.plano.pecasMes); return b>0?b:40; }
 function custoPeca(){
   var c=S.calc;
-  return num(c.camiseta)+num(c.estampa)+num(c.embalagem)+num(c.outros)+ num(c.fixosMes)/Math.max(1,num(c.pecasMes));
+  return num(c.camiseta)+num(c.estampa)+num(c.embalagem)+num(c.outros)+ num(c.fixosMes)/pecasRef();
 }
 function precoIdeal(canal, custo, margem){
   var m=margem/100;
@@ -614,7 +615,7 @@ function telaPrecos(){
 function resultadosPreco(){
   var custo=custoPeca(), m=num(S.calc.margem);
   var box=document.getElementById("resPreco"); if(!box) return;
-  var h='<div class="card"><div class="row"><span class="sub">Custo de cada camiseta</span><b class="disp" style="font-size:20px">'+R(custo)+'</b></div><div class="small">Já inclui '+R(num(S.calc.fixosMes)/Math.max(1,num(S.calc.pecasMes)))+' de custos fixos por peça.</div></div>';
+  var h='<div class="card"><div class="row"><span class="sub">Custo de cada camiseta</span><b class="disp" style="font-size:20px">'+R(custo)+'</b></div><div class="small">Já inclui '+R(num(S.calc.fixosMes)/pecasRef())+' de custos fixos por peça.</div></div>';
   h+='<div class="card"><h3>Preço sugerido pra '+m+'% de margem</h3>';
   CANAIS.forEach(function(cn){
     var p=precoIdeal(cn.id,custo,m), p90=arredonda90(p);
@@ -949,7 +950,7 @@ function contaCenario(c){
   var fg=num(c.freteGratis), frete = (fg>0 && liq>=fg) ? 0 : num(c.frete);
   var total=liq+frete, fretePeca = pecas? frete/pecas : 0, medio = pecas? total/pecas : 0;
   var k=contasPlano(), extras=num(S.calc.estampa)+num(S.calc.embalagem)+num(S.calc.outros);
-  var fixPeca = num(S.calc.fixosMes)/Math.max(1,num(S.calc.pecasMes));
+  var fixPeca = num(S.calc.fixosMes)/pecasRef();
   var base={fatorDesc: sub>0? liq/sub:1, fretePeca:fretePeca, extras:extras, fixPeca:fixPeca}, lt=0, liqTot=0;
   itens.forEach(function(i){ var ic=itemConta(i,base); lt+=ic.lucro*ic.q; liqTot+=ic.liq*ic.q; });
   var lucroPeca = pecas? lt/pecas : 0, liqMedio = pecas? liqTot/pecas : 0;
@@ -970,7 +971,7 @@ function telaCompra(){
   h+='<div class="grid g3">'+ic("estampa","Estampa / DTF (R$)")+ic("embalagem","Embalagem + tag (R$)")+ic("outros","Outros (R$)")+'</div>';
   h+='<div class="small mb">“Outros” = energia da prensa, perdas, linha, etc.</div>';
   h+='<div class="grid g2">'+ic("fixosMes","Custos fixos do mês (R$)")+ic("pecasMes","Peças vendidas por mês")+'</div>';
-  h+='<div class="small">Custos fixos = <b style="color:var(--txt)">DAS ('+R(num(S.dasValor))+')</b> + internet + Canva + anúncios… Eles são divididos pelas peças vendidas no mês: <b style="color:var(--txt)" id="fixoPecaLbl">'+R(num(cc.fixosMes)/Math.max(1,num(cc.pecasMes)))+' por peça</b>.</div></div>';
+  h+='<div class="small">Custos fixos = <b style="color:var(--txt)">DAS ('+R(num(S.dasValor))+')</b> + internet + Canva + anúncios… Eles são divididos pelas peças vendidas no mês: <b style="color:var(--txt)" id="fixoPecaLbl">'+R(num(cc.fixosMes)/pecasRef())+' por peça</b>.</div>'+(num(cc.pecasMes)>0?'':'<div class="dica warn mt" style="margin-bottom:0"><b>Preencham “Peças vendidas por mês”.</b> Enquanto estiver vazio, uso '+pecasRef()+' peças (a meta da aba Plano) pra dividir os custos fixos.</div>')+'</div>';
   h+='<div id="cmpResumo"></div>';
   cs.forEach(function(c){
     h+='<div class="card cen" data-cen="'+c.id+'"><input class="nome" data-cf="'+c.id+'" data-k="nome" value="'+esc(c.nome)+'" placeholder="Nome do cenário (ex.: Fornecedor B · 80 peças)">';
@@ -1031,7 +1032,7 @@ function recalcCompra(){
     var fn=num(c.freteGratis);
     if(k.desc>0) e+='<div class="dica mt" style="margin-bottom:0">💸 Os descontos economizaram <b>'+R(k.desc)+'</b> nesse pedido ('+R(k.desc/k.pecas)+' por peça).</div>';
     if(fn>0 && !k.freteGratis) e+='<div class="dica warn mt" style="margin-bottom:0">Faltam <b>'+R(fn-k.liq)+'</b> em camisetas pra ganhar o frete grátis (economia de '+R(num(c.frete))+').</div>';
-    e+='<div class="small mt">* Usando o preço de venda de cada camiseta (ou o preço médio da aba Plano, '+R(k.precoVenda)+', onde ficou em branco), já tirando as taxas das plataformas, estampa, embalagem e os custos fixos (DAS etc.: '+R(num(S.calc.fixosMes))+'/mês ÷ '+num(S.calc.pecasMes)+' peças = '+R(k.fixPeca)+' por peça, da aba Preços).';
+    e+='<div class="small mt">* Usando o preço de venda de cada camiseta (ou o preço médio da aba Plano, '+R(k.precoVenda)+', onde ficou em branco), já tirando as taxas das plataformas, estampa, embalagem e os custos fixos (DAS etc.: '+R(num(S.calc.fixosMes))+'/mês ÷ '+pecasRef()+' peças = '+R(k.fixPeca)+' por peça, da aba Preços).';
     if(k.pagaEm) e+=' O pedido se paga com as primeiras <b style="color:var(--txt)">'+k.pagaEm+' vendas</b>.';
     if(k.meses) e+=' Na meta de '+num(S.plano.pecasMes)+' peças/mês, esse estoque dura '+(k.meses<1?'<b style="color:var(--txt)">menos de 1 mês</b>':'uns <b style="color:var(--txt)">'+k.meses.toFixed(1).replace(".",",")+' meses</b>')+'.';
     e+='</div>';
@@ -1132,7 +1133,7 @@ document.addEventListener("submit",function(ev){
 var calcTimer=null;
 document.addEventListener("input",function(ev){
   var t=ev.target, d=t.dataset;
-  if(d.calc && aba==="compra"){ S.calc[d.calc]=t.value; var fl=document.getElementById("fixoPecaLbl"); if(fl) fl.textContent=R(num(S.calc.fixosMes)/Math.max(1,num(S.calc.pecasMes)))+" por peça"; recalcCompra(); }
+  if(d.calc && aba==="compra"){ S.calc[d.calc]=t.value; var fl=document.getElementById("fixoPecaLbl"); if(fl) fl.textContent=R(num(S.calc.fixosMes)/pecasRef())+" por peça"; recalcCompra(); }
   if(d.calc){ S.calc[d.calc]=t.value; if(d.calc==="margem"){var ml=document.getElementById("mLbl"); if(ml) ml.textContent=t.value+"%";} resultadosPreco();
     guardarCache();
     clearTimeout(calcTimer); calcTimer=setTimeout(salvar, 4000); }
