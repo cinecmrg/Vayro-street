@@ -343,7 +343,7 @@ function telaLogin(msg, carregando){
    (carregando?'<div class="small mt">Carregando…</div>':
    '<form id="fLogin"><label class="f"><span>Senha do painel</span><input type="password" name="senha" autocomplete="current-password" placeholder="Digite a senha" required></label>'+
    (msg?'<div class="small" style="color:var(--red);margin-bottom:10px">'+esc(msg)+'</div>':'')+
-   '<button class="btn full" type="submit">Entrar</button><div class="small mt">A senha fica lembrada neste aparelho. Cada sócio usa a mesma senha.</div></form>')+'</div>';
+   '<button class="btn full" type="submit">Entrar</button><div class="small mt">A senha fica lembrada neste aparelho. Quem ajuda na loja usa a mesma senha.</div></form>')+'</div>';
 }
 function entrar(s, silencioso){
   return rpc("vayro_get", {p_senha:s}).then(function(r){
@@ -380,7 +380,7 @@ function enviar(){
       S.produtos = unirPorId(srv.produtos, S.produtos);
       Object.keys(srv.etapas||{}).forEach(function(k){ if(srv.etapas[k] && S.etapas[k]===undefined) S.etapas[k]=true; });
       versao = r.versao; guardarCache(); render();
-      toast("Juntei com o que o outro sócio salvou ✔");
+      toast("Juntei com o que a outra pessoa salvou ✔");
       enviar(); return;
     }
     statusSalvo="off"; atualizaChip();
@@ -470,7 +470,7 @@ var TOTAL_PASSOS = FASES.reduce(function(a,f){return a+f.passos.length;},0);
 
 var CAT_E = ["Venda Shopee","Venda Shein","Venda direta / Instagram","Outras entradas"];
 var CAT_INV = "Investimento inicial (prensa, máquinas…)";
-var CAT_S = [CAT_INV,"Camisetas lisas","Estampa / insumos (DTF, tinta)","Embalagem e etiquetas","Frete / envio","Taxas de plataforma","DAS (imposto do MEI)","Anúncios / marketing","Equipamentos","Retirada dos sócios (pró-labore)","Outras saídas"];
+var CAT_S = [CAT_INV,"Camisetas lisas","Estampa / insumos (DTF, tinta)","Embalagem e etiquetas","Frete / envio","Taxas de plataforma","DAS (imposto do MEI)","Anúncios / marketing","Equipamentos","Retirada da Rafa (pró-labore)","Outras saídas"];
 var CANAIS = [{id:"shopee",n:"Shopee",cat:"Venda Shopee",b:"o"},{id:"shein",n:"Shein",cat:"Venda Shein",b:"r"},{id:"direta",n:"Venda direta",cat:"Venda direta / Instagram",b:"b"}];
 
 /* ---------- cálculos ---------- */
@@ -849,7 +849,7 @@ function textoPlano(){
 
 /* ---------- relatório ---------- */
 function temNF(l){ return l.nf!==undefined ? !!l.nf : l.categoria!=="Venda direta / Instagram"; }
-var CAT_RET="Retirada dos sócios (pró-labore)";
+var CAT_RET="Retirada da Rafa (pró-labore)";
 function mesAnterior(am){ var d=new Date(+am.slice(0,4), +am.slice(5,7)-2, 1); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
 function varTag(a,b,inverso){ if(!b) return ''; var p=(a-b)/Math.abs(b)*100; if(!isFinite(p)||Math.abs(p)<0.5) return ''; var bom=inverso? p<0 : p>0; return '<span class="var '+(bom?"up":"dn")+'">'+(p>0?"▲":"▼")+Math.abs(p).toFixed(0)+'%</span>'; }
 var NOMES_MES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -909,10 +909,10 @@ function textoRelatorio(){
   L.push("= Lucro líquido: "+R(r.lucro)+" (margem "+r.margem.toFixed(0)+"%)");
   if(r.pecas) L.push("Peças vendidas: "+r.pecas);
   L.push(""); L.push("CAIXA");
-  if(r.aporte) L.push("+ Aporte dos sócios: "+R(r.aporte));
+  if(r.aporte) L.push("+ Aporte da Rafa: "+R(r.aporte));
   if(r.estoque) L.push("(−) Compra de estoque: "+R(r.estoque));
   if(r.inv) L.push("(−) Investimentos: "+R(r.inv));
-  if(r.ret) L.push("(−) Retirada dos sócios: "+R(r.ret));
+  if(r.ret) L.push("(−) Retirada da Rafa: "+R(r.ret));
   L.push("Saldo do mês: "+R(r.saldo)+" · Caixa no fim do mês: "+R(saldoCaixa(fimMes(am))));
   var cks=Object.keys(r.canais);
   if(cks.length){ L.push(""); L.push("VENDAS POR CANAL"); cks.forEach(function(k){ L.push("- "+k.replace("Venda ","")+": "+R(r.canais[k])); }); }
@@ -1088,18 +1088,18 @@ function recalcCompra(){
 }
 
 /* ---------- gestão: categorias, custos, resultado e caixa ---------- */
-var CAT_APORTE = "Aporte dos sócios (dinheiro colocado)";
+var CAT_APORTE = "Aporte da Rafa (dinheiro colocado)";
 if(CAT_E.indexOf(CAT_APORTE)<0) CAT_E.push(CAT_APORTE);
 var GRUPOS_S = [
  {k:"estoque", n:"🧺 Compra de estoque", d:"Camisetas lisas, DTF, embalagens. Sai do caixa agora, mas só vira custo quando a peça é vendida.", cats:["Camisetas lisas","Estampa / insumos (DTF, tinta)","Embalagem e etiquetas"]},
  {k:"despesa", n:"🧾 Despesas do mês", d:"Gastos pra loja funcionar. Entram direto no resultado do mês.", cats:["DAS (imposto do MEI)","Anúncios / marketing","Frete / envio","Outras saídas"]},
  {k:"taxa", n:"🏷️ Taxas de venda", d:"Comissões da Shopee/Shein. São lançadas sozinhas quando vocês registram uma venda.", cats:["Taxas de plataforma"]},
  {k:"invest", n:"🏗️ Investimento", d:"Prensa, máquinas. Fica fora do lucro do mês e vai sendo pago pelo lucro das vendas.", cats:[CAT_INV,"Equipamentos"]},
- {k:"retirada", n:"👛 Retirada dos sócios", d:"Dinheiro que vocês tiram pra vocês. Não é custo da empresa, mas sai do caixa.", cats:[CAT_RET]}
+ {k:"retirada", n:"👛 Retirada da Rafa", d:"Dinheiro que a Rafa tira pra ela (pró-labore). Não é custo da empresa, mas sai do caixa.", cats:[CAT_RET]}
 ];
 var GRUPOS_E = [
  {k:"venda", n:"💰 Vendas", d:"Conta no faturamento, no lucro e no limite do MEI.", cats:["Venda Shopee","Venda Shein","Venda direta / Instagram"]},
- {k:"aporte", n:"🤝 Dinheiro dos sócios", d:"Dinheiro que vocês colocaram na empresa. Entra no caixa, mas não é venda nem lucro.", cats:[CAT_APORTE]},
+ {k:"aporte", n:"🤝 Dinheiro da Rafa", d:"Dinheiro que a Rafa colocou na empresa. Entra no caixa, mas não é venda nem lucro.", cats:[CAT_APORTE]},
  {k:"outra", n:"➕ Outras entradas", d:"Entradas que não são venda (ex.: reembolso). Entram no resultado, mas não no limite do MEI.", cats:["Outras entradas"]}
 ];
 var CLASSE_S = {};
@@ -1199,12 +1199,12 @@ function cardResultado(r, compacto, ant){
   if(!compacto){
     h+='<div class="grid g3 mt">'+kpi('Margem', r.vendas? r.margem.toFixed(0)+'%' : '—', r.margem>=0?"":"neg")+kpi('Peças vendidas', r.pecas||'—')+kpi('Ticket médio', r.pecas? R(r.vendas/r.pecas) : '—')+'</div>';
     h+='<h3 class="mt" style="margin-top:18px">💵 Movimento de caixa</h3><div class="sub mb">Dinheiro que entrou e saiu, mas que não é lucro nem prejuízo.</div><table class="tbl">';
-    h+='<tr><td>+ Dinheiro dos sócios (aporte)</td><td>'+R(r.aporte)+'</td></tr>';
+    h+='<tr><td>+ Dinheiro colocado pela Rafa (aporte)</td><td>'+R(r.aporte)+'</td></tr>';
     h+='<tr><td>(−) Compra de estoque</td><td>'+R(r.estoque)+'</td></tr>';
     h+='<tr><td>(−) Investimentos (prensa, máquinas)</td><td>'+R(r.inv)+'</td></tr>';
-    h+='<tr><td>(−) Retirada dos sócios</td><td>'+R(r.ret)+'</td></tr>';
+    h+='<tr><td>(−) Retirada da Rafa (pró-labore)</td><td>'+R(r.ret)+'</td></tr>';
     h+='<tr class="tot"><td>Saldo do mês no caixa</td><td class="'+(r.saldo>=0?"pos":"neg")+'">'+R(r.saldo)+'</td></tr></table>';
-    if(r.ret>Math.max(0,r.lucro)) h+='<div class="dica warn mt" style="margin-bottom:0"><b>Atenção:</b> a retirada dos sócios ('+R(r.ret)+') foi maior que o lucro do mês. Cuidado pra não descapitalizar a empresa.</div>';
+    if(r.ret>Math.max(0,r.lucro)) h+='<div class="dica warn mt" style="margin-bottom:0"><b>Atenção:</b> a retirada da Rafa ('+R(r.ret)+') foi maior que o lucro do mês. Cuidado pra não descapitalizar a empresa.</div>';
   }
   h+='<div class="small mt">O custo da camiseta só entra quando ela é <b style="color:var(--txt)">vendida</b>. Comprar estoque mexe no caixa, não no lucro.</div>';
   return h+'</div>';
@@ -1256,7 +1256,7 @@ function telaInicio(){
     kpi('Estoque', est.pecas+' peças', '', R(est.custo)+' em mercadoria')+'</div>';
   // alertas
   var al=[];
-  if(cx<0) al.push(['⚠️','Caixa negativo ('+R(cx)+'). O dinheiro que vocês colocaram do bolso entra como <b>Dinheiro → Entrada → Aporte dos sócios</b>.']);
+  if(cx<0) al.push(['⚠️','Caixa negativo ('+R(cx)+'). O dinheiro que a Rafa colocou do bolso entra como <b>Dinheiro → Entrada → Aporte da Rafa</b>.']);
   if(S.abertura && mAt>=S.abertura && !doMes(mAt).some(function(l){ return l.tipo==="s" && l.categoria==="DAS (imposto do MEI)"; }))
     al.push(['🧾','DAS de '+nomeMes(mAt)+' ('+R(num(S.dasValor))+') ainda não foi lançado. Vence dia 20. <button class="btn sm ghost" data-das style="margin-top:6px">Marcar como pago</button>']);
   var esg=S.produtos.filter(function(p){ return num(p.estoque)<=0; }), ult=S.produtos.filter(function(p){ return num(p.estoque)===1; });
@@ -1373,7 +1373,7 @@ function CFG_HTML(){
    '<dt>Lucro bruto</dt><dd>Vendas menos o custo das peças e as taxas das plataformas.</dd>'+
    '<dt>Lucro líquido</dt><dd>Lucro bruto menos as despesas do mês (DAS, anúncios…). É o lucro de verdade.</dd>'+
    '<dt>Saldo em caixa</dt><dd>Quanto dinheiro a empresa tem agora: tudo que entrou menos tudo que saiu.</dd>'+
-   '<dt>Aporte</dt><dd>Dinheiro que os sócios colocam na empresa. Entra no caixa, mas não é venda.</dd>'+
+   '<dt>Aporte</dt><dd>Dinheiro que a dona (Rafa) coloca na empresa. Entra no caixa, mas não é venda.</dd>'+
    '<dt>Pró-labore</dt><dd>Retirada fixa que o dono tira pra si todo mês.</dd>'+
    '</dl></div>';
   h+='<div class="dica warn"><b>Lembrete importante:</b> o MEI tem um dono só. Se forem duas pessoas tocando o negócio, só uma fica como dona do CNPJ — combinem bem como vai ser a divisão (por escrito é melhor!).</div>';
@@ -1445,7 +1445,7 @@ document.addEventListener("submit",function(ev){
   if(fid==="fLogin"){ var sv=f.senha.value.trim(); if(sv){ f.querySelector("button").textContent="Entrando…"; entrar(sv,false); } return; }
   if(fid==="fSenha"){
     var nova=f.nova.value.trim(); if(nova.length<10){ toast("Use pelo menos 10 caracteres"); return; }
-    rpc("vayro_trocar_senha",{p_senha:senha,p_nova:nova}).then(function(r){ if(r.ok){ senha=nova; try{localStorage.setItem(SENHA_KEY,nova);}catch(e){} f.reset(); toast("Senha trocada! Avise o outro sócio 🔐"); } else toast(r.erro==="curta"?"Senha muito curta":"Não consegui trocar a senha"); }).catch(function(){ toast("Sem internet agora 😕"); });
+    rpc("vayro_trocar_senha",{p_senha:senha,p_nova:nova}).then(function(r){ if(r.ok){ senha=nova; try{localStorage.setItem(SENHA_KEY,nova);}catch(e){} f.reset(); toast("Senha trocada! Avise quem também usa o painel 🔐"); } else toast(r.erro==="curta"?"Senha muito curta":"Não consegui trocar a senha"); }).catch(function(){ toast("Sem internet agora 😕"); });
     return;
   }
   if(fid==="fLanc"){
